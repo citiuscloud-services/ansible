@@ -1,0 +1,6 @@
+projectKey=Ansible
+serverUrl=https://sonarqube-sonarqube-sonarqube.apps.ocpv.citiuscloud.local
+serverVersion=25.12.0.117093
+dashboardUrl=https://sonarqube-sonarqube-sonarqube.apps.ocpv.citiuscloud.local/dashboard?id=Ansible
+ceTaskId=ee019457-4239-4d3d-b67b-a51c25470db3
+ceTaskUrl=https://sonarqube-sonarqube-sonarqube.apps.ocpv.citiuscloud.local/api/ce/task?id=ee019457-4239-4d3d-b67b-a51c25470db3
