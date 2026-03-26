@@ -233,19 +233,19 @@ def test_api_token_auth_with_v2_url():
 
 
 def test_api_basic_auth_password():
-    token = BasicAuthToken(username=u"ansible_test_user", password=u"ansible_test_password")
+    token = BasicAuthToken(username=u"user", password=u"pass")
     api = GalaxyAPI(None, "test", "https://galaxy.ansible.com/api/", token=token)
     actual = {}
     api._add_auth_token(actual, "", required=True)
-    assert actual == {'Authorization': 'Basic YW5zaWJsZV90ZXN0X3VzZXI6YW5zaWJsZV90ZXN0X3Bhc3N3b3Jk'}
+    assert actual == {'Authorization': 'Basic dXNlcjpwYXNz'}
 
 
 def test_api_basic_auth_no_password():
-    token = BasicAuthToken(username=u"ansible_test_user")
+    token = BasicAuthToken(username=u"user")
     api = GalaxyAPI(None, "test", "https://galaxy.ansible.com/api/", token=token)
     actual = {}
     api._add_auth_token(actual, "", required=True)
-    assert actual == {'Authorization': 'Basic YW5zaWJsZV90ZXN0X3VzZXI6'}
+    assert actual == {'Authorization': 'Basic dXNlcjo='}
 
 
 def test_api_dont_override_auth_header():
