@@ -403,6 +403,9 @@ def _do_until_success_or_condition(
                 reset_required = True
 
             # Use exponential backoff with a max timeout, plus a little bit of randomness
+
+            # Using random.randint is safe here as it is only adding jitter to retry timing
+            # and does not involve any security-sensitive operation
             random_int = random.randint(0, 1000) / 1000
             fail_sleep = 2**fail_count + random_int
             if fail_sleep > max_fail_sleep:

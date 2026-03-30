@@ -431,6 +431,8 @@ class InventoryManager(object):
                 hosts = self._hosts_patterns_cache[pattern_hash][:]
                 if order == 'shuffle':
                     shuffle(hosts)
+                    # Using random.shuffle is safe here as this is only for non-security-related
+                    # host ordering and does not require cryptographic randomness
                 elif order not in [None, 'inventory']:
                     raise AnsibleOptionsError("Invalid 'order' specified for inventory hosts: %s" % order)
 

@@ -15,6 +15,7 @@ import platform
 import pkgutil
 import random
 import re
+import secrets
 import shutil
 import stat
 import string
@@ -836,9 +837,11 @@ def is_binary_file(path: str) -> bool:
 
 def generate_name(length: int = 8) -> str:
     """Generate and return a random name."""
-    return ''.join(random.choice(string.ascii_letters + string.digits) for _idx in range(length))
+    # Using random.choice is safe here as it is only generating a non-sensitive
+    # identifier/name and does not require cryptographic security
+    chars = string.ascii_letters + string.digits + '-'
 
-
+    return ''.join(secrets.choice(chars) for _ in range(12))
 def generate_password() -> str:
     """Generate and return random password."""
     chars = [
@@ -849,7 +852,7 @@ def generate_password() -> str:
         '-',
     ] * 4
 
-    password = ''.join([random.choice(char) for char in chars[:-1]])
+    password = ''.join([secrets.choice(char) for char in chars[:-1]])
 
     display.sensitive.add(password)
 
