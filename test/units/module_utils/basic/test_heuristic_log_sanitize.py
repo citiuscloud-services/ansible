@@ -23,7 +23,8 @@ from ansible.module_utils.basic import heuristic_log_sanitize
 
 class TestHeuristicLogSanitize:
     def setup_method(self):
-        self.URL_SECRET = 'http://username:pas:word@foo.com/data'
+        # Synthetic test vectors for log sanitization — not real credentials. NOSONAR
+        self.URL_SECRET = 'http://username:pas:word@foo.com/data'  # NOSONAR
         self.SSH_SECRET = 'username:pas:word@foo.com/data'
         self.clean_data = repr(self._gen_data(3, True, True, 'no_secret_here'))
         self.url_data = repr(self._gen_data(3, True, True, self.URL_SECRET))

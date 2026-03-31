@@ -37,9 +37,12 @@ from units.mock.yaml_helper import YamlTestUtils
 from units.mock.vault_helper import TextVaultSecret
 
 
+_FAKE_VAULT_PASSWORD = "hunter42"  # NOSONAR - synthetic test vault password, not a real credential
+
+
 class TestAnsibleDumper(unittest.TestCase, YamlTestUtils):
     def setUp(self):
-        self.vault_password = "hunter42"
+        self.vault_password = _FAKE_VAULT_PASSWORD
         vault_secret = TextVaultSecret(self.vault_password)
         self.vault_secrets = [('vault_secret', vault_secret)]
         self.good_vault = vault.VaultLib(self.vault_secrets)

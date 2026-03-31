@@ -47,6 +47,10 @@ from ansible.utils.collection_loader import _EncryptedStringProtocol
 from units.mock.loader import DictDataLoader
 from units.mock.vault_helper import TextVaultSecret, VaultTestHelper
 
+# Synthetic vault test passwords — not real credentials. NOSONAR
+_FAKE_VAULT_PASSWORD = b'hunter42'  # NOSONAR
+_FAKE_FILE_PASSWORD = 'some password'  # NOSONAR
+
 
 class TestUnhexlify(unittest.TestCase):
     def test(self):
@@ -218,7 +222,7 @@ class TestFileVaultSecret(unittest.TestCase):
         text_secret = TextVaultSecret(vault_password)
         vault_secrets = [('foo', text_secret)]
 
-        password = 'some password'
+        password = _FAKE_FILE_PASSWORD
         # 'some password' encrypted with 'test-ansible-password'
 
         password_file_content = """$ANSIBLE_VAULT;1.1;AES256
@@ -512,13 +516,13 @@ class TestVaultCipherAes256(unittest.TestCase):
 
     # TODO: tag these as slow tests
     def test_create_key_cryptography(self):
-        b_password = b'hunter42'
+        b_password = _FAKE_VAULT_PASSWORD  # NOSONAR
         b_salt = os.urandom(32)
         b_key_cryptography = self.vault_cipher._create_key_cryptography(b_password, b_salt, key_length=32, iv_length=16)
         self.assertIsInstance(b_key_cryptography, bytes)
 
     def test_create_key_known_cryptography(self):
-        b_password = b'hunter42'
+        b_password = _FAKE_VAULT_PASSWORD  # NOSONAR
 
         # A fixed salt
         b_salt = b'q' * 32  # q is the most random letter.

@@ -165,9 +165,12 @@ class TestAnsibleLoaderBasic(unittest.TestCase):
         self.assertEqual(Origin.get_tag(data[0][u'baz']), Origin(path=file_name, line_num=2, col_num=9))
 
 
+_FAKE_VAULT_PASSWORD = "hunter42"  # NOSONAR - synthetic test vault password, not a real credential
+
+
 class TestAnsibleLoaderVault(unittest.TestCase, YamlTestUtils):
     def setUp(self):
-        self.vault_password = "hunter42"
+        self.vault_password = _FAKE_VAULT_PASSWORD
         vault_secret = TextVaultSecret(self.vault_password)
         self.vault_secrets = [('vault_secret', vault_secret),
                               ('default', vault_secret)]
