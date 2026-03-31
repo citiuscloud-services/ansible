@@ -1080,10 +1080,10 @@ class GalaxyCLI(CLI):
                 license='license (GPL-2.0-or-later, MIT, etc)',
                 role_name=obj_name,
                 role_type=context.CLIARGS['role_type'],
-                issue_tracker_url='http://example.com/issue/tracker',
-                repository_url='http://example.com/repository',
-                documentation_url='http://docs.example.com',
-                homepage_url='http://example.com',
+                issue_tracker_url='https://example.com/issue/tracker',
+                repository_url='https://example.com/repository',
+                documentation_url='https://docs.example.com',
+                homepage_url='https://example.com',
                 min_ansible_version=ansible_version[:3],  # x.y
                 dependencies=[],
             ))
@@ -1100,10 +1100,10 @@ class GalaxyCLI(CLI):
                 readme='README.md',
                 authors=['your name <example@domain.com>'],
                 license=['GPL-2.0-or-later'],
-                repository='http://example.com/repository',
-                documentation='http://docs.example.com',
-                homepage='http://example.com',
-                issues='http://example.com/issue/tracker',
+                repository='https://example.com/repository',
+                documentation='https://docs.example.com',
+                homepage='https://example.com',
+                issues='https://example.com/issue/tracker',
                 build_ignore=[],
             ))
 

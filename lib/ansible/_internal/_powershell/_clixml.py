@@ -173,7 +173,9 @@ def build_array_list_clixml(
         hex_split = [hex_char[i : i + 4] for i in range(0, len(hex_char), 4)]
 
         return "".join([f"_x{i}_" for i in hex_split])
-
+    
+    # This is an XML namespace identifier (not a network request),
+    # so using "http" is required for compatibility and is safe here.
     objs = ET.Element('Objs', xmlns="http://schemas.microsoft.com/powershell/2004/04", Version="1.1.0.1")
     obj = ET.SubElement(objs, 'Obj', RefId="0")
 

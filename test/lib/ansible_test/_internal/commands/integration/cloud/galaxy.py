@@ -34,6 +34,8 @@ from . import (
 
 
 GALAXY_HOST_NAME = 'galaxy-pulp'
+# These URLs are used for internal service communication (e.g., within a containerized
+# or test environment). HTTPS is not required as traffic remains within a trusted network.
 SETTINGS = {
     'PULP_CONTENT_ORIGIN': f'http://{GALAXY_HOST_NAME}',
     'PULP_ANSIBLE_API_HOSTNAME': f'http://{GALAXY_HOST_NAME}',

@@ -20,4 +20,6 @@ if __name__ == '__main__':
 
     Handler.extensions_map['.json'] = 'application/json'
     httpd = socketserver.TCPServer(("", PORT), Handler)
+    # This HTTP server is intended for local/testing use only.
+    # It does not handle sensitive data, so HTTPS is not required here.
     httpd.serve_forever()

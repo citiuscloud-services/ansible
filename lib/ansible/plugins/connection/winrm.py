@@ -511,6 +511,9 @@ class Connection(ConnectionBase):
                 break
 
     def _winrm_send_input(self, protocol: winrm.Protocol, shell_id: str, command_id: str, stdin: bytes, eof: bool = False) -> None:
+        # These URIs (resource_uri and action) are WSMan protocol identifiers,
+        # not actual HTTP requests. They must use "http" as defined by the
+        # WinRM/WSMan specification. Changing to "https" would break functionality.
         rq = {'env:Envelope': protocol._get_soap_header(
             resource_uri='http://schemas.microsoft.com/wbem/wsman/1/windows/shell/cmd',
             action='http://schemas.microsoft.com/wbem/wsman/1/windows/shell/Send',
