@@ -103,7 +103,10 @@ def generate_rst(template_file: pathlib.Path) -> dict[str, str]:
     results: dict[str, str] = {}
 
     for cli_name, template_vars in collect_programs().items():
-        env = jinja2.Environment(loader=jinja2.FileSystemLoader(template_file.parent))
+        env = jinja2.Environment(
+            loader=jinja2.FileSystemLoader(template_file.parent),
+            autoescape=False,  # RST output, not HTML — auto-escaping would corrupt markup syntax
+        )
         template = env.get_template(template_file.name)
         results[cli_name] = template.render(template_vars)
 

@@ -16,7 +16,8 @@ import yaml
 from optparse import OptionParser
 from jinja2 import Environment
 
-ENV = Environment()
+# autoescape=False: renders plaintext Ansible test fixture content, not HTML output
+ENV = Environment(autoescape=False)  # NOSONAR
 TESTDIR = tempfile.mkdtemp()
 
 
@@ -100,7 +101,8 @@ print(json.dumps(data, indent=2, sort_keys=True))
     }
 
     def __init__(self, features):
-        self.ENV = Environment()
+        # autoescape=False: renders plaintext Ansible test fixture content, not HTML output
+        self.ENV = Environment(autoescape=False)  # NOSONAR
         self.features = features
         self.fpath = None
         self.inventory = self.BASEINV.copy()
