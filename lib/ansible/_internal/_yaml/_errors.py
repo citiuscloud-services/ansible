@@ -70,7 +70,8 @@ class AnsibleYAMLParserError(AnsibleParserError):
             message = "Tabs are usually invalid in YAML."
 
         # Check for unquoted templates.
-        elif match := re.search(r'^\s*(?:-\s+)*(?:[\w\s]+:\s+)?(?P<value>\{\{.*}})', target_line):
+        # Fixed: use [^\s:][^:]*? for key portion to anchor on colon, and [^}]* inside template braces
+        elif match := re.search(r'^\s*(?:-\s+)*(?:[^\s:][^:]*:\s+)?(?P<value>\{\{[^}]*(?:}[^}][^}]*)*}})', target_line):
             source_context = _error_utils.SourceContext.from_origin(origin.replace(col_num=match.start('value') + 1))
             message = 'This may be an issue with missing quotes around a template block.'
             # FIXME: Use the captured value to show the actual fix required.
@@ -89,7 +90,8 @@ Should be:
             # ignore lines starting with only whitespace and a colon
             not target_line.lstrip().startswith(':')
             # find the value after list/dict preamble
-            and (value_match := re.search(r'^\s*(?:-\s+)*(?:[\w\s\[\]{}]+:\s+)?(?P<value>.*)$', target_line))
+            # Fixed: anchor key characters to exclude colon/space to prevent overlap with surrounding whitespace
+            and (value_match := re.search(r'^\s*(?:-\s+)*(?:[^\s:][^:]*:\s+)?(?P<value>.*)$', target_line))
             # ignore properly quoted values
             and (target_fragment := _replace_quoted_value(value_match.group('value')))
             # look for an unquoted colon in the value
@@ -109,7 +111,8 @@ Should be:
 """
 
         # Check for common quoting mistakes.
-        elif match := re.search(r'^\s*(?:-\s+)*(?:[\w\s]+:\s+)?(?P<value>[\"\'].*?\s*)$', target_line):
+        # Fixed: key uses [^\s:][^:]* pattern; trailing \s* folded into .* since $ already anchors end
+        elif match := re.search(r'^\s*(?:-\s+)*(?:[^\s:][^:]*:\s+)?(?P<value>[\"\'].*)$', target_line):
             suspected_value = match.group('value')
             first, last = suspected_value[0], suspected_value[-1]
 
