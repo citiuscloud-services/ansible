@@ -176,7 +176,8 @@ from ansible.module_utils.common.warnings import (
 # this matters, make sure to check for strings before checking for sequencetype
 SEQUENCETYPE = frozenset, KeysView, Sequence
 
-PASSWORD_MATCH = re.compile(r'^(?:.+[-_\s])?pass(?:[-_\s]?(?:word|phrase|wrd|wd)?)(?:[-_\s].+)?$', re.I)
+# Fixed: replaced .+ with [^-_\s]+ in prefix/suffix to prevent overlap with the delimiter chars
+PASSWORD_MATCH = re.compile(r'^(?:[^-_\s]+[-_\s])?pass(?:[-_\s]?(?:word|phrase|wrd|wd)?)(?:[-_\s][^-_\s]+)?$', re.I)
 
 imap = map
 

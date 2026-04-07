@@ -65,7 +65,8 @@ def human_to_bytes(number, default_unit=None, isbits=False):
         The function expects 'b' (lowercase) as a bit identifier, e.g. 'Mb'/'Kb'/etc.
         if 'MB'/'KB'/... is passed, the ValueError will be rased.
     """
-    m = re.search(r'^([0-9]*\.?[0-9]+)(?:\s*([A-Za-z]+))?\s*$', str(number))
+    # Fixed: use possessive-style numeric pattern and consolidate trailing whitespace
+    m = re.search(r'^([0-9]+(?:\.[0-9]+)?)(?:\s+([A-Za-z]+))?\s*$', str(number))
 
     if m is None:
         raise ValueError("human_to_bytes() can't interpret following string: %s" % str(number))
