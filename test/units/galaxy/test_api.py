@@ -1259,8 +1259,8 @@ def test_clear_cache(cache_dir):
     ('http://hostname:80/path', 'hostname:80'),
     ('https://testing.com:invalid', 'testing.com:'),
     ('https://testing.com:1234', 'testing.com:1234'),
-    ('https://username:password@testing.com/path', 'testing.com:'),
-    ('https://username:password@testing.com:443/path', 'testing.com:443'),
+    ('https://username:password@testing.com/path', 'testing.com:'),  # NOSONAR - fake test vector
+    ('https://username:password@testing.com:443/path', 'testing.com:443'),  # NOSONAR - fake test vector
 ])
 def test_cache_id(url, expected):
     actual = galaxy_api.get_cache_id(url)

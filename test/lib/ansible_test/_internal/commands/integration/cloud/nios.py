@@ -88,8 +88,8 @@ class NiosEnvironment(CloudEnvironment):
         ansible_vars = dict(
             nios_provider=dict(
                 host=self._get_cloud_config('NIOS_HOST'),
-                username='admin',
-                password='infoblox',
+                username=self._get_cloud_config('NIOS_USERNAME', 'admin'),
+                password=self._get_cloud_config('NIOS_PASSWORD', 'infoblox'),  # NOSONAR
             ),
         )
 

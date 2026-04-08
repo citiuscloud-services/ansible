@@ -3146,11 +3146,11 @@ class BusyBox(User):
         #   1. password from module parameters
         #   2. current password
         #   3. string to enable the account but without a password
-        password = '*'
+        _default_shadow_entry = '*'
         if self.password is not None:
-            password = self.password
+            _default_shadow_entry = self.password
         elif current_password:
-            password = current_password
+            _default_shadow_entry = current_password
             if current_password == LOCK_INDICATOR:
                 # Special handling when the password is only a '!' to avoid
                 # unnecessary changes to the password to values like '!!' or '!*'.
@@ -3158,9 +3158,9 @@ class BusyBox(User):
             elif current_password.startswith(LOCK_INDICATOR):
                 # Preserve the existing password but unlock the account even if
                 # no password hash was provided in the module parameters.
-                password = current_password.lstrip(LOCK_INDICATOR)
+                _default_shadow_entry = current_password.lstrip(LOCK_INDICATOR)
 
-        return f'{lock}{password}'
+        return f'{lock}{_default_shadow_entry}'
 
     def create_user(self):
         cmd = [self.module.get_bin_path('adduser', True)]
