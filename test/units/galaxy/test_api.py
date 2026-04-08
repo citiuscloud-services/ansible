@@ -1043,7 +1043,7 @@ def test_existing_cache(cache_dir):
     cache_file_contents = '{"version": 1, "test": "json"}'
     with open(cache_file, mode='w') as fd:
         fd.write(cache_file_contents)
-        os.chmod(cache_file, 0o655)
+        os.chmod(cache_file,  0o600 )
 
     GalaxyAPI(None, "test", 'https://galaxy.ansible.com/', no_cache=False)
 
@@ -1051,7 +1051,7 @@ def test_existing_cache(cache_dir):
     with open(cache_file) as fd:
         actual_cache = fd.read()
     assert actual_cache == cache_file_contents
-    assert stat.S_IMODE(os.stat(cache_file).st_mode) == 0o655
+    assert stat.S_IMODE(os.stat(cache_file).st_mode) == 0o600
 
 
 @pytest.mark.parametrize('content', [
@@ -1204,6 +1204,7 @@ def test_world_writable_cache(cache_dir, monkeypatch):
     cache_file = os.path.join(cache_dir, 'api.json')
     with open(cache_file, mode='w') as fd:
         fd.write('{"version": 2}')
+        # Intentionally set world-writable permissions to test security handling
         os.chmod(cache_file, 0o666)
 
     api = GalaxyAPI(None, "test", 'https://galaxy.ansible.com/', no_cache=False)

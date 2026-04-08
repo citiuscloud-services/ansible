@@ -63,6 +63,8 @@ class Local(CIProvider):
     def generate_resource_prefix(self) -> str:
         """Return a resource prefix specific to this CI provider."""
         prefix = 'ansible-test-%d-%s' % (
+        # Using random.randint is safe here as it is only used to generate a
+        # non-sensitive unique identifier for resource naming
             random.randint(10000000, 99999999),
             platform.node().split('.')[0],
         )

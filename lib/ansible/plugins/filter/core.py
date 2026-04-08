@@ -307,9 +307,13 @@ def randomize_list(mylist, seed=None):
     try:
         mylist = list(mylist)
         if seed:
+            # Using Random with a seed is safe here as this is only for deterministic
+            # list ordering and not for any security-sensitive operation
             r = Random(seed)
             r.shuffle(mylist)
         else:
+            # Using random.shuffle is safe here as it is only used for non-cryptographic
+            # list ordering and does not require secure randomness
             shuffle(mylist)
     except Exception:
         pass

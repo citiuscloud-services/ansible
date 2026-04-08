@@ -230,6 +230,8 @@ def run_container(
             time.sleep(3)
         else:
             if args.explain:
+                # Using random.choice is safe here as it is only generating mock hexadecimal
+                # output for explain/debug mode and does not require cryptographic security
                 stdout = ''.join(random.choice('0123456789abcdef') for _iteration in range(64))
 
             return stdout.strip()
@@ -694,7 +696,11 @@ class ContainerDescriptor:
                 Id=self.container_id,
                 NetworkSettings=dict(
                     IPAddress='127.0.0.1',
-                    Ports=dict(('%d/tcp' % port, [dict(HostPort=random.randint(30000, 40000) if self.publish_ports else port)]) for port in self.ports),
+                    Ports=dict(('%d/tcp' % port, [dict(
+                        # Using random.randint is safe here as it is only generating mock
+                        # port values for explain/debug mode and does not require
+                        # cryptographic security
+                        HostPort=random.randint(30000, 40000) if self.publish_ports else port)]) for port in self.ports),
                 ),
                 Config=dict(
                     Env=['%s=%s' % (key, value) for key, value in self.env.items()] if self.env else [],

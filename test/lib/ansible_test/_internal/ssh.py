@@ -142,6 +142,9 @@ class SshProcess:
             else:
                 # explain mode
                 dst = self.pending_forwards[0]
+
+            # Using random.randint is safe here as it is only generating a mock source port
+            # for explain/debug mode and does not involve any security-sensitive operation
                 src_port = random.randint(40000, 50000)
 
             self.pending_forwards.remove(dst)

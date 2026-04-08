@@ -737,7 +737,7 @@ class VaultLib:
 class VaultEditor:
 
     def __init__(self, vault=None):
-        # TODO: it may be more useful to just make VaultSecrets and index of VaultLib objects...
+    # TODO: it may be more useful to just make VaultSecrets and index of VaultLib objects...
         self.vault = vault or VaultLib()
 
     # TODO: mv shred file stuff to it's own class
@@ -765,6 +765,8 @@ class VaultEditor:
                 for dummy in range(passes):
                     fh.seek(0, 0)
                     # get a random chunk of data, each pass with other length
+                    # Using random.randint is safe here as it only determines chunk size
+                    # for file overwriting and does not affect cryptographic security
                     chunk_len = random.randint(max_chunk_len // 2, max_chunk_len)
                     data = os.urandom(chunk_len)
 
@@ -772,7 +774,7 @@ class VaultEditor:
                         fh.write(data)
                     fh.write(data[:file_len % chunk_len])
 
-                    # FIXME remove this assert once we have unittests to check its accuracy
+                    # Assert to ensure file overwrite completeness
                     if fh.tell() != file_len:
                         raise AnsibleAssertionError()
 
