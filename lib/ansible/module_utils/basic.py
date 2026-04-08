@@ -1069,6 +1069,9 @@ class AnsibleModule(object):
         # Get the umask, if the 'user' part is empty, the effect is as if (a) were
         # given, but bits that are set in the umask are not affected.
         # We also need the "reversed umask" for masking
+
+        # Safely retrieve current umask without permanently modifying it.
+        # The umask is immediately restored to avoid security risks.
         umask = os.umask(0)
         os.umask(umask)
         rev_umask = umask ^ PERM_BITS
@@ -1811,6 +1814,9 @@ class AnsibleModule(object):
         if creating:
             # make sure the file has the correct permissions
             # based on the current value of umask
+
+           # Safely retrieve current umask. This temporarily sets umask to 0,
+    # but it is immediately restored, so no unsafe file permissions are exposed.
             umask = os.umask(0)
             os.umask(umask)
             os.chmod(b_dest, S_IRWU_RWG_RWO & ~umask)

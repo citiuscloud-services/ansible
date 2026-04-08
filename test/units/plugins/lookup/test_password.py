@@ -362,34 +362,50 @@ class TestParseContent(unittest.TestCase):
         self.assertEqual(salt, u'87654321')
         self.assertEqual(ident, u'2a')
 
+# NOTE: These are dummy test values, not real credentials.
+test_password = u'test_hunter42'
+test_salt = u'test_87654321'
 
 class TestFormatContent(unittest.TestCase):
-    # Synthetic test password — not a real credential. NOSONAR
-    _FAKE_PASSWORD = u'hunter42'  # NOSONAR
 
     def test_no_encrypt(self):
         self.assertEqual(
-            password._format_content(password=self._FAKE_PASSWORD,
-                                     salt=u'87654321',
-                                     encrypt=False),
-            u'hunter42 salt=87654321')
+            password._format_content(
+                password=test_password,
+                salt=test_salt,
+                encrypt=False
+            ),
+            u'test_hunter42 salt=test_87654321'
+        )
 
     def test_no_encrypt_no_salt(self):
         self.assertEqual(
-            password._format_content(password=self._FAKE_PASSWORD,
-                                     salt=None,
-                                     encrypt=None),
-            u'hunter42')
+            password._format_content(
+                password=test_password,
+                salt=None,
+                encrypt=None
+            ),
+            u'test_hunter42'
+        )
 
     def test_encrypt(self):
         self.assertEqual(
-            password._format_content(password=self._FAKE_PASSWORD,
-                                     salt=u'87654321',
-                                     encrypt='pbkdf2_sha256'),
-            u'hunter42 salt=87654321')
+            password._format_content(
+                password=test_password,
+                salt=test_salt,
+                encrypt='pbkdf2_sha256'
+            ),
+            u'test_hunter42 salt=test_87654321'
+        )
 
     def test_encrypt_no_salt(self):
-        self.assertRaises(AssertionError, password._format_content, self._FAKE_PASSWORD, None, 'pbkdf2_sha256')
+        self.assertRaises(
+            AssertionError,
+            password._format_content,
+            test_password,
+            None,
+            'pbkdf2_sha256'
+        )
 
 
 class TestWritePasswordFile(unittest.TestCase):

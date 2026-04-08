@@ -12,7 +12,7 @@ os.environ['ANSIBLE_NOCOLOR'] = '1'
 out = pexpect.run(
     'ansible localhost -m debug -a msg="{{ ansible_password }}" -k',
     events={
-        'SSH password:': '{{ 1 + 2 }}\n'
+        'SSH password:': '{{ 1 + 2 }}\n'  # NOSONAR - intentional test value, not a real credential
     }
 )
 

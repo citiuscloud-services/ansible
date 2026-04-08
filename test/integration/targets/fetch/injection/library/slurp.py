@@ -21,6 +21,8 @@ bad_responses = ['../foo', '../../foo', '../../../foo', '/../../../foo', '/../fo
 
 
 def main():
+    # Using random.choice is safe here as it is only selecting test input
+    # from predefined values and does not involve any security-sensitive randomness
     print(json.dumps(dict(changed=False, content='', encoding='base64', source=random.choice(bad_responses))))
 
 

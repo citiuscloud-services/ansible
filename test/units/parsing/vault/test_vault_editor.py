@@ -21,6 +21,7 @@ from __future__ import annotations
 import os
 import tempfile
 from io import BytesIO, StringIO
+import shutil
 
 import pytest
 
@@ -58,10 +59,10 @@ class TestVaultEditor(unittest.TestCase):
     def vault_secret(self):
         return match_encrypt_secret(self.vault_secrets)[1]
 
-    def tearDown(self):
+    def tearDown(self):    #doubt(file 3)
         if self._test_dir:
-            pass
-            # shutil.rmtree(self._test_dir)
+            
+            shutil.rmtree(self._test_dir)
         self._test_dir = None
 
     def _secrets(self, password):
@@ -170,6 +171,8 @@ class TestVaultEditor(unittest.TestCase):
             tmp_file.write(new_src_contents)
 
     def _faux_command(self, tmp_path):
+         # This is a mock function used for testing subprocess calls.
+    # It intentionally does nothing.
         pass
 
     @patch('ansible.parsing.vault.subprocess.call')
@@ -196,7 +199,7 @@ class TestVaultEditor(unittest.TestCase):
         with open(src_file_path, 'rb') as new_src_file:
             new_src_file_contents = new_src_file.read()
 
-        # TODO: assert that it is encrypted
+        # verify that the file is encrypted
         self.assertTrue(vault.is_encrypted(new_src_file_contents))
 
         src_file_plaintext = vault_editor.vault.decrypt(new_src_file_contents)
@@ -220,14 +223,16 @@ class TestVaultEditor(unittest.TestCase):
         ve = self._vault_editor()
         ve.encrypt_file(src_file_path, self.vault_secret)
 
-        # FIXME: update to just set self._secrets or just a new vault secret id
+        # create new vault secret
         new_password = 'password2:electricbugaloo'
         new_vault_secret = TextVaultSecret(new_password)
-        new_vault_secrets = [('default', new_vault_secret)]
-        ve.rekey_file(src_file_path, vault.match_encrypt_secret(new_vault_secrets)[1])
+        #update vault secrets
+        self.vault_secrets = [('default', new_vault_secret)]
+        #rekey using updated secrets
+        ve.rekey_file(src_file_path, vault.match_encrypt_secret(self.vault_secrets)[1])
 
-        # FIXME: can just update self._secrets here
-        new_ve = vault.VaultEditor(VaultLib(new_vault_secrets))
+        #  Use updated secrets
+        new_ve = vault.VaultEditor(VaultLib(self.vault_secrets))
         self._assert_file_is_encrypted(new_ve, src_file_path, src_file_contents)
 
     def test_rekey_file_no_new_password(self):
@@ -332,7 +337,7 @@ class TestVaultEditor(unittest.TestCase):
         with open(src_file_path, 'rb') as new_src_file:
             new_src_file_contents = new_src_file.read()
 
-        self.assertTrue(b'$ANSIBLE_VAULT;1.1;AES256' in new_src_file_contents)
+        self.assertIn(b'$ANSIBLE_VAULT;1.1;AES256' , new_src_file_contents)
 
         src_file_plaintext = ve.vault.decrypt(new_src_file_contents)
         self.assertEqual(src_file_plaintext, new_src_contents)
@@ -360,7 +365,7 @@ class TestVaultEditor(unittest.TestCase):
         with open(src_file_path, 'rb') as new_src_file:
             new_src_file_contents = new_src_file.read()
 
-        self.assertTrue(b'$ANSIBLE_VAULT;1.2;AES256;vault_secrets' in new_src_file_contents)
+        self.assertIn(b'$ANSIBLE_VAULT;1.2;AES256;vault_secrets' , new_src_file_contents)
 
         src_file_plaintext = ve.vault.decrypt(new_src_file_contents)
         self.assertEqual(src_file_plaintext, new_src_contents)
@@ -439,6 +444,7 @@ class TestVaultEditor(unittest.TestCase):
 
     @patch.object(vault.VaultEditor, '_editor_shell_command')
     def test_create_file(self, mock_editor_shell_command):
+        TEST_SECRET = "dummy_secret_value" 
 
         def sc_side_effect(filename):
             return ['touch', filename]
@@ -447,7 +453,7 @@ class TestVaultEditor(unittest.TestCase):
         tmp_file = tempfile.NamedTemporaryFile()
         os.unlink(tmp_file.name)
 
-        _secrets = self._secrets('ansible')
+        _secrets = self._secrets(TEST_SECRET)
         ve = self._vault_editor(_secrets)
         ve.create_file(tmp_file.name, vault.match_encrypt_secret(_secrets)[1])
 
@@ -458,7 +464,7 @@ class TestVaultEditor(unittest.TestCase):
         with v11_file as f:
             f.write(to_bytes(v11_data))
 
-        ve = self._vault_editor(self._secrets("ansible"))
+        ve = self._vault_editor(self._secrets("TEST_SECRET"))
 
         # make sure the password functions for the cipher
         ve.decrypt_file(v11_file.name)

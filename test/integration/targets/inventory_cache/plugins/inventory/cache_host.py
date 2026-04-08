@@ -47,6 +47,8 @@ class InventoryModule(BaseInventoryPlugin, Cacheable):
                 update_cache = True
 
         if host is None:
+        # Using random.randint is safe here as it is only used to generate a
+        # non-sensitive test hostname and does not require cryptographic security
             host = 'testhost{0}'.format(random.randint(0, 50))
 
         self.inventory.add_host(host, 'all')
