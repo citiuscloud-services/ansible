@@ -42,8 +42,8 @@ def test_Request_fallback(urlopen_mock, install_opener_mock, mocker):
         force=True,
         timeout=100,
         validate_certs=False,
-        url_username='ansible_test_user',
-        url_password='ansible_test_password',
+        url_username='user',
+        url_password='passwd',
         http_agent='ansible-tests',
         force_basic_auth=True,
         follow_redirects='all',
@@ -64,8 +64,8 @@ def test_Request_fallback(urlopen_mock, install_opener_mock, mocker):
         call(None, True),  # force
         call(None, 100),  # timeout
         call(None, False),  # validate_certs
-        call(None, 'ansible_test_user'),  # url_username
-        call(None, 'ansible_test_password'),  # url_password
+        call(None, 'user'),  # url_username
+        call(None, 'passwd'),  # url_password
         call(None, 'ansible-tests'),  # http_agent
         call(None, True),  # force_basic_auth
         call(None, 'all'),  # follow_redirects
@@ -90,7 +90,7 @@ def test_Request_fallback(urlopen_mock, install_opener_mock, mocker):
 
     req = args[0]
     assert req.headers == {
-        'Authorization': b'Basic YW5zaWJsZV90ZXN0X3VzZXI6YW5zaWJsZV90ZXN0X3Bhc3N3b3Jk',
+        'Authorization': b'Basic dXNlcjpwYXNzd2Q=',
         'Cache-control': 'no-cache',
         'Foo': 'bar',
         'User-agent': 'ansible-tests'
@@ -177,7 +177,7 @@ def test_Request_open_headers(urlopen_mock, install_opener_mock):
 
 
 def test_Request_open_username(urlopen_mock, install_opener_mock):
-    r = Request().open('GET', 'http://ansible.com/', url_username='ansible_test_user')
+    r = Request().open('GET', 'http://ansible.com/', url_username='user')
 
     opener = install_opener_mock.call_args[0][0]
     handlers = opener.handlers
@@ -192,7 +192,7 @@ def test_Request_open_username(urlopen_mock, install_opener_mock):
         if isinstance(handler, expected_handlers):
             found_handlers.append(handler)
     assert len(found_handlers) == 2
-    assert found_handlers[0].passwd.passwd[None] == {(('ansible.com', '/'),): ('ansible_test_user', None)}
+    assert found_handlers[0].passwd.passwd[None] == {(('ansible.com', '/'),): ('user', None)}
 
 
 @pytest.mark.parametrize('url, expected', (
@@ -219,7 +219,7 @@ def test_Request_open_username_in_url(url, expected, urlopen_mock, install_opene
 
 
 def test_Request_open_username_force_basic(urlopen_mock, install_opener_mock):
-    r = Request().open('GET', 'http://ansible.com/', url_username='ansible_test_user', url_password='ansible_test_password', force_basic_auth=True)
+    r = Request().open('GET', 'http://ansible.com/', url_username='user', url_password='passwd', force_basic_auth=True)
 
     opener = install_opener_mock.call_args[0][0]
     handlers = opener.handlers
@@ -238,7 +238,7 @@ def test_Request_open_username_force_basic(urlopen_mock, install_opener_mock):
 
     args = urlopen_mock.call_args[0]
     req = args[0]
-    assert req.headers.get('Authorization') == b'Basic YW5zaWJsZV90ZXN0X3VzZXI6YW5zaWJsZV90ZXN0X3Bhc3N3b3Jk'
+    assert req.headers.get('Authorization') == b'Basic dXNlcjpwYXNzd2Q='
 
 
 def test_Request_open_auth_in_netloc(urlopen_mock, install_opener_mock):
@@ -271,7 +271,7 @@ def test_Request_open_netrc(urlopen_mock, install_opener_mock, monkeypatch):
     r = Request().open('GET', 'http://ansible.com/')
     args = urlopen_mock.call_args[0]
     req = args[0]
-    assert req.headers.get('Authorization') == b'Basic YW5zaWJsZV90ZXN0X3VzZXI6YW5zaWJsZV90ZXN0X3Bhc3N3b3Jk'
+    assert req.headers.get('Authorization') == b'Basic dXNlcjpwYXNzd2Q='
 
     r = Request().open('GET', 'http://foo.ansible.com/')
     args = urlopen_mock.call_args[0]

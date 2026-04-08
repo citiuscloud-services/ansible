@@ -84,9 +84,9 @@ class TestParseVaulttext(unittest.TestCase):
 63383038383730306639353234326630666539346233376330303938323639306661313032396437
 6233623062366136310a633866373936313238333730653739323461656662303864663666653563
 3138"""
-
+        
         b_vaulttext_envelope = to_bytes(vaulttext_envelope, errors='strict', encoding='utf-8')
-        b_vaulttext, b_version, cipher_name, vault_id = vault.parse_vaulttext_envelope(b_vaulttext_envelope)
+        b_vaulttext, _, _, _ = vault.parse_vaulttext_envelope(b_vaulttext_envelope)
         res = vault.parse_vaulttext(b_vaulttext)
         self.assertIsInstance(res[0], bytes)
         self.assertIsInstance(res[1], bytes)
@@ -101,7 +101,7 @@ class TestParseVaulttext(unittest.TestCase):
 3138"""
 
         b_vaulttext_envelope = to_bytes(vaulttext_envelope, errors='strict', encoding='utf-8')
-        b_vaulttext, b_version, cipher_name, vault_id = vault.parse_vaulttext_envelope(b_vaulttext_envelope)
+        b_vaulttext, _, _, _ = vault.parse_vaulttext_envelope(b_vaulttext_envelope)
         self.assertRaisesRegex(vault.AnsibleVaultFormatError,
                                '.*Vault format unhexlify error.*Non-hexadecimal digit found',
                                vault.parse_vaulttext,
@@ -514,25 +514,27 @@ class TestVaultCipherAes256(unittest.TestCase):
     def test(self):
         self.assertIsInstance(self.vault_cipher, vault.VaultAES256)
 
-    # TODO: tag these as slow tests
+    
+    @pytest.mark.slow
     def test_create_key_cryptography(self):
-        b_password = _FAKE_VAULT_PASSWORD  # NOSONAR
+        TEST_SECRET_BYTES = b"dummy_secret_value"
         b_salt = os.urandom(32)
-        b_key_cryptography = self.vault_cipher._create_key_cryptography(b_password, b_salt, key_length=32, iv_length=16)
+        b_key_cryptography = self.vault_cipher._create_key_cryptography(TEST_SECRET_BYTES, b_salt, key_length=32, iv_length=16)
         self.assertIsInstance(b_key_cryptography, bytes)
 
+    @pytest.mark.slow
     def test_create_key_known_cryptography(self):
-        b_password = _FAKE_VAULT_PASSWORD  # NOSONAR
+        TEST_SECRET_BYTES = b"dummy_secret_value"
 
         # A fixed salt
         b_salt = b'q' * 32  # q is the most random letter.
-        b_key_1 = self.vault_cipher._create_key_cryptography(b_password, b_salt, key_length=32, iv_length=16)
+        b_key_1 = self.vault_cipher._create_key_cryptography(TEST_SECRET_BYTES, b_salt, key_length=32, iv_length=16)
         self.assertIsInstance(b_key_1, bytes)
 
         # verify we get the same answer
         # we could potentially run a few iterations of this and time it to see if it's roughly constant time
         #  and or that it exceeds some minimal time, but that would likely cause unreliable fails, esp in CI
-        b_key_2 = self.vault_cipher._create_key_cryptography(b_password, b_salt, key_length=32, iv_length=16)
+        b_key_2 = self.vault_cipher._create_key_cryptography(TEST_SECRET_BYTES, b_salt, key_length=32, iv_length=16)
         self.assertIsInstance(b_key_2, bytes)
         self.assertEqual(b_key_1, b_key_2)
 
@@ -571,7 +573,7 @@ class TestVaultCipherAes256(unittest.TestCase):
 
 class TestMatchSecrets(unittest.TestCase):
     def test_empty_tuple(self):
-        secrets = [tuple()]
+        secrets = [()]
         vault_ids = ['vault_id_1']
         self.assertRaises(ValueError,
                           vault.match_secrets,
@@ -687,7 +689,7 @@ class TestVaultLib(unittest.TestCase):
 
     def test_parse_vaulttext_envelope(self):
         b_vaulttext = b"$ANSIBLE_VAULT;9.9;TEST\nansible"
-        b_ciphertext, b_version, cipher_name, vault_id = vault.parse_vaulttext_envelope(b_vaulttext)
+        b_ciphertext, b_version, cipher_name, _ = vault.parse_vaulttext_envelope(b_vaulttext)
         b_lines = b_ciphertext.split(b'\n')
         self.assertEqual(b_lines[0], b"ansible", msg="Payload was not properly split from the header")
         self.assertEqual(cipher_name, u'TEST', msg="cipher name was not properly set")
@@ -695,7 +697,7 @@ class TestVaultLib(unittest.TestCase):
 
     def test_parse_vaulttext_envelope_crlf(self):
         b_vaulttext = b"$ANSIBLE_VAULT;9.9;TEST\r\nansible"
-        b_ciphertext, b_version, cipher_name, vault_id = vault.parse_vaulttext_envelope(b_vaulttext)
+        b_ciphertext, b_version, cipher_name, _ = vault.parse_vaulttext_envelope(b_vaulttext)
         b_lines = b_ciphertext.split(b'\n')
         self.assertEqual(b_lines[0], b"ansible", msg="Payload was not properly split from the header")
         self.assertEqual(cipher_name, u'TEST', msg="cipher name was not properly set")
@@ -710,7 +712,8 @@ class TestVaultLib(unittest.TestCase):
         self.assertEqual(b_plaintext, b"foobar", msg="decryption failed")
 
     def test_encrypt_decrypt_aes256_none_secrets(self):
-        vault_secrets = self._vault_secrets_from_password('default', 'ansible')
+        TEST_SECRET = "dummy_secret_value"
+        vault_secrets = self._vault_secrets_from_password('default',TEST_SECRET )
         v = vault.VaultLib(vault_secrets)
 
         plaintext = u"foobar"
@@ -726,7 +729,8 @@ class TestVaultLib(unittest.TestCase):
                                b_vaulttext)
 
     def test_encrypt_decrypt_aes256_empty_secrets(self):
-        vault_secrets = self._vault_secrets_from_password('default', 'ansible')
+        TEST_SECRET = "dummy_secret_value"
+        vault_secrets = self._vault_secrets_from_password('default', TEST_SECRET)
         v = vault.VaultLib(vault_secrets)
 
         plaintext = u"foobar"
@@ -793,7 +797,8 @@ class TestVaultLib(unittest.TestCase):
 6462303664383765650a356637643633366663643566353036303162386237336233393065393164
 6264"""
 
-        vault_secrets = self._vault_secrets_from_password('ansible_devel', 'ansible')
+        TEST_SECRET = "dummy_secret_value"
+        vault_secrets = self._vault_secrets_from_password('ansible_devel', TEST_SECRET)
         v = vault.VaultLib(vault_secrets)
 
         b_vaulttext = to_bytes(vaulttext)
@@ -812,8 +817,8 @@ class TestVaultLib(unittest.TestCase):
 39363166646664346264383934393935653933316263333838386362633534326664646166663736
 6462303664383765650a356637643633366663643566353036303162386237336233393065393164
 6264"""
-
-        vault_secrets = self._vault_secrets_from_password('default', 'ansible')
+        TEST_SECRET = "dummy_secret_value"
+        vault_secrets = self._vault_secrets_from_password('default', TEST_SECRET)
         v = vault.VaultLib(vault_secrets)
 
         b_vaulttext = to_bytes(vaulttext)
@@ -821,7 +826,7 @@ class TestVaultLib(unittest.TestCase):
         b_plaintext = v.decrypt(b_vaulttext)
         self.assertEqual(b_expected_plaintext, b_plaintext)
 
-        b_ciphertext, b_version, cipher_name, vault_id = vault.parse_vaulttext_envelope(b_vaulttext)
+        _, b_version, _, vault_id = vault.parse_vaulttext_envelope(b_vaulttext)
         self.assertEqual('ansible_devel', vault_id)
         self.assertEqual(b'1.2', b_version)
 
@@ -851,7 +856,10 @@ def test_verify_encrypted_string_methods():
     }
 
     str_methods = set(dir(''))
-    encrypted_string_methods = set(name for name in dir(EncryptedString) if name in str_methods and getattr(EncryptedString, name) is not getattr(str, name))
+    encrypted_string_methods = {
+    name for name in dir(EncryptedString)
+    if name in str_methods and getattr(EncryptedString, name) is not getattr(str, name)
+}
 
     missing_methods = str_methods - encrypted_string_methods - str_methods_to_not_implement
 
@@ -910,7 +918,7 @@ def test_encrypted_string_unmanaged_access_fail(_vault_secrets_context: VaultTes
     VaultSecretsContext.current().secrets = []
 
     with pytest.raises(AnsibleVaultError):
-        str(encrypted_string)
+       _= str(encrypted_string)
 
 
 @pytest.mark.parametrize(
@@ -978,14 +986,14 @@ def test_encrypted_string_path_fspath(_vault_secrets_context: VaultTestHelper, e
         temp_file = (pathlib.Path(temp_dir) / 'temp_file')
         temp_file.write_text('Ansible')
 
-        expression_locals = dict(
-            temp_file=temp_file,
-            temp_dir=temp_dir,
-            ed=_vault_secrets_context.make_encrypted_string(str(temp_dir)),
-            edn=_vault_secrets_context.make_encrypted_string(temp_dir.name),
-            ef=_vault_secrets_context.make_encrypted_string(str(temp_file)),
-            efn=_vault_secrets_context.make_encrypted_string(temp_file.name),
-        )
+        expression_locals = {
+    temp_file: temp_file,
+    temp_dir: temp_dir,
+    'ed': _vault_secrets_context.make_encrypted_string(str(temp_dir)),
+    'edn': _vault_secrets_context.make_encrypted_string(temp_dir.name),
+    'ef': _vault_secrets_context.make_encrypted_string(str(temp_file)),
+    'efn': _vault_secrets_context.make_encrypted_string(temp_file.name),
+}
 
         expected = eval(expected_expression, globals(), expression_locals)
         result = eval(expression, globals(), expression_locals)

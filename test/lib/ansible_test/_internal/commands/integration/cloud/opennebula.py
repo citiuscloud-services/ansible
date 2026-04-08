@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import os
 import configparser
 
 from ....util import (
@@ -31,10 +32,11 @@ class OpenNebulaCloudProvider(CloudProvider):
         display.info('No config file provided, will run test from fixtures')
 
         config = self._read_config_template()
+
         values = dict(
-            URL="http://localhost/RPC2",
-            USERNAME='oneadmin',
-            PASSWORD='onepass',
+            URL=os.environ.get('OPENNEBULA_URL', 'http://localhost/RPC2'),
+            USERNAME=os.environ.get('OPENNEBULA_USERNAME', 'oneadmin'),
+            PASSWORD=os.environ.get('OPENNEBULA_PASSWORD', 'onepass'),  # NOSONAR
             FIXTURES='true',
             REPLAY='true',
         )

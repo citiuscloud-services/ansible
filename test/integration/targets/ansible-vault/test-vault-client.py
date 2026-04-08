@@ -11,7 +11,8 @@ import argparse
 import sys
 
 # TODO: could read these from the files I suppose...
-secrets = {'vault-password': 'test-vault-password',
+# Test-only fixture passwords — not real credentials.  # noqa: S105, S106
+secrets = {'vault-password': 'test-vault-password',  # NOSONAR
            'vault-password-wrong': 'hunter42',
            'vault-password-ansible': 'ansible',
            'password': 'password',

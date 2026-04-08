@@ -69,8 +69,8 @@ def test_fetch_url(open_url_mock, fake_ansible_module):
 def test_fetch_url_params(open_url_mock, fake_ansible_module):
     fake_ansible_module.params = {
         'validate_certs': False,
-        'url_username': 'ansible_test_user',
-        'url_password': 'ansible_test_password',
+        'url_username': 'user',
+        'url_password': 'passwd',
         'http_agent': 'ansible-test',
         'force_basic_auth': True,
         'follow_redirects': 'all',
@@ -84,7 +84,7 @@ def test_fetch_url_params(open_url_mock, fake_ansible_module):
 
     open_url_mock.assert_called_once_with(BASE_URL, client_cert='client.pem', client_key='client.key', cookies=kwargs['cookies'], data=None,
                                           follow_redirects='all', force=False, force_basic_auth=True, headers=None,
-                                          http_agent='ansible-test', last_mod_time=None, method=None, timeout=10, url_password='ansible_test_password', url_username='ansible_test_user',
+                                          http_agent='ansible-test', last_mod_time=None, method=None, timeout=10, url_password='passwd', url_username='user',
                                           use_proxy=True, validate_certs=False, use_gssapi=False, unix_socket=None, ca_path=None, unredirected_headers=None,
                                           decompress=True, ciphers=None, use_netrc=True)
 

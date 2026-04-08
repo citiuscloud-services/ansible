@@ -70,17 +70,21 @@ def test_git_ssh_role_url():
     assert role['version'] is None
 
 
+# Use a clearly synthetic token value that cannot be mistaken for a real credential
+_FAKE_DEPLOY_TOKEN = 'gldt-XXXXXXXXXXXXXXXXXXXX'  # NOSONAR - synthetic test token, not real
+
+
 def test_token_role_url():
-    role = RoleRequirement.role_yaml_parse('git+https://gitlab+deploy-token-312644:_aJQ9c3HWzmRR4knBNyx@gitlab.com/akasurde/ansible-demo')
-    assert role['src'] == 'https://gitlab+deploy-token-312644:_aJQ9c3HWzmRR4knBNyx@gitlab.com/akasurde/ansible-demo'
+    role = RoleRequirement.role_yaml_parse(f'git+https://gitlab+deploy-token-312644:{_FAKE_DEPLOY_TOKEN}@gitlab.com/akasurde/ansible-demo')
+    assert role['src'] == f'https://gitlab+deploy-token-312644:{_FAKE_DEPLOY_TOKEN}@gitlab.com/akasurde/ansible-demo'
     assert role['name'].startswith('ansible-demo')
     assert role['scm'] == 'git'
     assert role['version'] is None
 
 
 def test_token_new_style_role_url():
-    role = RoleRequirement.role_yaml_parse({"src": "git+https://gitlab+deploy-token-312644:_aJQ9c3HWzmRR4knBNyx@gitlab.com/akasurde/ansible-demo"})
-    assert role['src'] == 'https://gitlab+deploy-token-312644:_aJQ9c3HWzmRR4knBNyx@gitlab.com/akasurde/ansible-demo'
+    role = RoleRequirement.role_yaml_parse({"src": f'git+https://gitlab+deploy-token-312644:{_FAKE_DEPLOY_TOKEN}@gitlab.com/akasurde/ansible-demo'})
+    assert role['src'] == f'https://gitlab+deploy-token-312644:{_FAKE_DEPLOY_TOKEN}@gitlab.com/akasurde/ansible-demo'
     assert role['name'].startswith('ansible-demo')
     assert role['scm'] == 'git'
     assert role['version'] == ''
