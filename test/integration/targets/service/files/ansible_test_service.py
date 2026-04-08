@@ -10,7 +10,7 @@ import resource
 import signal
 import time
 
-UMASK = 0
+UMASK =  0o022   # standard safe default
 WORKDIR = "/"
 MAXFD = 1024
 
@@ -36,6 +36,7 @@ def createDaemon():
 
         if (pid == 0):
             os.chdir(WORKDIR)
+            # Set a safe umask for the daemon process to restrict default file permissions
             os.umask(UMASK)
         else:
             with open('/var/run/ansible_test_service.pid', 'w') as f:

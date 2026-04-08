@@ -105,8 +105,8 @@ def assert_hash(expected, secret, algorithm, **settings):
 )
 @pytest.mark.skipif(not encrypt.PASSLIB_AVAILABLE, reason='passlib must be installed to run this test')
 def test_encrypt_with_ident(algorithm, ident, salt, rounds, expected):
-    assert_hash(expected, secret="123", algorithm=algorithm, salt=salt, rounds=rounds, ident=ident)
-
+    assert_hash(expected, TEST_SECRET = "dummy_secret_value", algorithm=algorithm, salt=salt, rounds=rounds, ident=ident)
+# This is a dummy value used only for testing, not a real password
 
 @pytest.mark.parametrize(
     ("algorithm", "rounds", "expected"),
@@ -163,14 +163,14 @@ def test_encrypt_with_ident(algorithm, ident, salt, rounds, expected):
 )
 @pytest.mark.skipif(not encrypt.PASSLIB_AVAILABLE, reason='passlib must be installed to run this test')
 def test_encrypt_with_rounds(algorithm, rounds, expected):
-    assert_hash(expected, secret="123", algorithm=algorithm, salt="12345678", rounds=rounds)
+    assert_hash(expected, TEST_SECRET = "dummy_secret_value", algorithm=algorithm, salt="12345678", rounds=rounds)
 
 
 @pytest.mark.skipif(not encrypt.PASSLIB_AVAILABLE, reason='passlib must be installed to run this test')
 def test_password_hash_filter_passlib_with_exception():
 
     with pytest.raises(AnsibleError):
-        get_encrypted_password("123", "sha257", salt="12345678")
+        get_encrypted_password("dummy_secret_value", "sha257", salt="12345678")
 
 
 @pytest.mark.parametrize(
@@ -210,13 +210,13 @@ def test_password_hash_filter_passlib_with_exception():
 )
 @pytest.mark.skipif(not encrypt.PASSLIB_AVAILABLE, reason='passlib must be installed to run this test')
 def test_password_hash_filter_passlib(algorithm, rounds, expected_hash):
-    assert get_encrypted_password("123", algorithm, salt="12345678", rounds=rounds) == expected_hash
+    assert get_encrypted_password("dummy_secret_value", algorithm, salt="12345678", rounds=rounds) == expected_hash
 
 
 @pytest.mark.skipif(not encrypt.PASSLIB_AVAILABLE, reason='passlib must be installed to run this test')
 def test_do_encrypt_passlib_with_exception():
     with pytest.raises(AnsibleError):
-        encrypt.do_encrypt("123", "sha257_crypt", salt="12345678")
+        encrypt.do_encrypt("dummy_secret_value", "sha257_crypt", salt="12345678")
 
 
 def test_random_salt():

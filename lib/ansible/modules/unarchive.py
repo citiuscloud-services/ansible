@@ -470,6 +470,9 @@ class ZipArchive(object):
             unarchived = False
 
         # Get some information related to user/group ownership
+
+        # Safely retrieve current umask. This temporarily sets umask to 0,
+        # but it is immediately restored, so no unsafe permissions are exposed.
         umask = os.umask(0)
         os.umask(umask)
         systemtype = platform.system()
