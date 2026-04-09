@@ -68,7 +68,8 @@ class HPUXHardware(Hardware):
                     cpu_facts['processor_count'] = int(out.strip().split('=')[1])
                 rc, out, err = self.module.run_command("/usr/contrib/bin/machinfo | grep 'processor family'", use_unsafe_shell=True)
                 if out:
-                    cpu_facts['processor'] = re.search('.*(Intel.*)', out).groups()[0].strip()
+                    # Fixed: anchor search to 'Intel' directly — no leading .* needed since re.search scans automatically
+                    cpu_facts['processor'] = re.search(r'(Intel[^\n]*)', out).groups()[0].strip()
                 rc, out, err = self.module.run_command("ioscan -FkCprocessor | wc -l", use_unsafe_shell=True)
                 cpu_facts['processor_cores'] = int(out.strip())
             if collected_facts.get('ansible_distribution_version') == "B.11.31":
@@ -116,7 +117,8 @@ class HPUXHardware(Hardware):
         if collected_facts.get('ansible_architecture') in ['9000/800', '9000/785']:
             try:
                 rc, out, err = self.module.run_command("grep Physical /var/adm/syslog/syslog.log")
-                data = re.search('.*Physical: ([0-9]*) Kbytes.*', out).groups()[0].strip()
+                # Fixed: removed redundant leading/trailing .* since re.search handles positioning automatically
+                data = re.search(r'Physical: ([0-9]+) Kbytes', out).groups()[0].strip()
                 memory_facts['memtotal_mb'] = int(data) // 1024
             except AttributeError:
                 # For systems where memory details aren't sent to syslog or the log has rotated, use parsed
@@ -129,7 +131,8 @@ class HPUXHardware(Hardware):
                         memory_facts['memtotal_mb'] = int(data) / 256
         else:
             rc, out, err = self.module.run_command("/usr/contrib/bin/machinfo | grep Memory", use_unsafe_shell=True)
-            data = re.search(r'Memory[\ :=]*([0-9]*).*MB.*', out).groups()[0].strip()
+            # Fixed: removed trailing .* (redundant with re.search), tightened number to [0-9]+ and anchored MB
+            data = re.search(r'Memory[\s:=]*([0-9]+)\s*MB', out).groups()[0].strip()
             memory_facts['memtotal_mb'] = int(data)
         rc, out, err = self.module.run_command("/usr/sbin/swapinfo -m -d -f -q")
         memory_facts['swaptotal_mb'] = int(out.strip())

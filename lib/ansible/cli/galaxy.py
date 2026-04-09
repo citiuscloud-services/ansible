@@ -932,7 +932,8 @@ class GalaxyCLI(CLI):
             meta_entry['value'] = value
             config_list.append(meta_entry)
 
-        link_pattern = re.compile(r"L\(([^)]+),\s+([^)]+)\)")
+        # Fixed: exclude comma from first group to unambiguously delimit at the ', ' separator
+        link_pattern = re.compile(r"L\(([^),]+),\s+([^)]+)\)")
         const_pattern = re.compile(r"C\(([^)]+)\)")
 
         def comment_ify(v):

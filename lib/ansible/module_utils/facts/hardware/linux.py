@@ -75,7 +75,8 @@ class LinuxHardware(Hardware):
     BIND_MOUNT_RE = re.compile(r'.*\]')
 
     # regex used against mtab content to find entries that are bind mounts
-    MTAB_BIND_MOUNT_RE = re.compile(r'.*bind.*"')
+    # Fixed: removed leading .* (redundant for re.search), constrained post-bind match to non-quote chars
+    MTAB_BIND_MOUNT_RE = re.compile(r'bind[^"]*"')
 
     # regex used for replacing octal escape sequences
     OCTAL_ESCAPE_RE = re.compile(r'\\[0-9]{3}')
@@ -422,12 +423,13 @@ class LinuxHardware(Hardware):
             ('system_vendor', 'product_version', 'product_serial', 'product_name', 'product_uuid'),
             'NA'
         )
+        # Fixed: replaced .+ with [^\r\n]+ to prevent matching across line boundaries and eliminate backtracking
         sysinfo_re = re.compile(
             r"""
                 ^
-                    (?:Manufacturer:\s+(?P<system_vendor>.+))|
-                    (?:Type:\s+(?P<product_name>.+))|
-                    (?:Sequence\ Code:\s+0+(?P<product_serial>.+))
+                    (?:Manufacturer:\s+(?P<system_vendor>[^\r\n]+))|
+                    (?:Type:\s+(?P<product_name>[^\r\n]+))|
+                    (?:Sequence\ Code:\s+0+(?P<product_serial>[^\r\n]+))
                 $
             """,
             re.VERBOSE | re.MULTILINE
@@ -820,7 +822,8 @@ class LinuxHardware(Hardware):
             d['scheduler_mode'] = ""
             scheduler = get_file_content(sysdir + "/queue/scheduler")
             if scheduler is not None:
-                m = re.match(r".*?(\[(.*)\])", scheduler)
+                # Fixed: replaced inner .* with [^\[\]]+ to prevent greedy match consuming multiple bracketed groups
+                m = re.match(r".*?(\[([^\[\]]+)\])", scheduler)
                 if m:
                     d['scheduler_mode'] = m.group(2)
 
