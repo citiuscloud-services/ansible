@@ -100,32 +100,44 @@ class TestAnsibleModuleExitJson:
 
 class TestAnsibleModuleExitValuesRemoved:
     """
-    Test that ExitJson and FailJson remove password-like values
+    Test that ExitJson and FailJson remove password-like values.
+    NOTE: The DATA fixture below intentionally contains fake passwords, pwd keys,
+    and URLs with embedded credentials. These are synthetic test vectors used to
+    verify that ExitJson and FailJson correctly scrub sensitive values from output.
+    None of these are real credentials. SonarQube hotspots in this block are
+    acknowledged false positives. NOSONAR
     """
     OMIT = 'VALUE_SPECIFIED_IN_NO_LOG_PARAMETER'
 
-    DATA = (
+    # Synthetic test vectors only - not real credentials. NOSONAR
+    _FAKE_PASSWORD_1 = '$secret k3y'       # NOSONAR
+    _FAKE_PASSWORD_2 = 'password12345'     # NOSONAR
+    _FAKE_URL_WITH_CRED = 'https://username:password12345@foo.com/login/'   # NOSONAR
+    _FAKE_URL_REDACTED = 'https://username:********@foo.com/login/'         # NOSONAR
+
+    DATA = (  # NOSONAR
         (
-            dict(username='person', password='$secret k3y'),
-            dict(one=1, pwd='$secret k3y', url='https://username:password12345@foo.com/login/',
+            dict(username='person', password=_FAKE_PASSWORD_1),
+            dict(one=1, pwd=_FAKE_PASSWORD_1, url=_FAKE_URL_WITH_CRED,
                  not_secret='following the leader', msg='here'),
-            dict(one=1, pwd=OMIT, url='https://username:password12345@foo.com/login/',
+            dict(one=1, pwd=OMIT, url=_FAKE_URL_WITH_CRED,
                  not_secret='following the leader', msg='here',
                  invocation=dict(module_args=dict(password=OMIT, token=None, username='person'))),
         ),
         (
-            dict(username='person', password='password12345'),
-            dict(one=1, pwd='$secret k3y', url='https://username:password12345@foo.com/login/',
+            dict(username='person', password=_FAKE_PASSWORD_2),
+            dict(one=1, pwd=_FAKE_PASSWORD_1, url=_FAKE_URL_WITH_CRED,
                  not_secret='following the leader', msg='here'),
-            dict(one=1, pwd='$secret k3y', url='https://username:********@foo.com/login/',
+            dict(one=1, pwd=_FAKE_PASSWORD_1, url=_FAKE_URL_REDACTED,
                  not_secret='following the leader', msg='here',
                  invocation=dict(module_args=dict(password=OMIT, token=None, username='person'))),
         ),
         (
-            dict(username='person', password='$secret k3y'),
-            dict(one=1, pwd='$secret k3y', url='https://username:$secret k3y@foo.com/login/',
+            dict(username='person', password=_FAKE_PASSWORD_1),
+            dict(one=1, pwd=_FAKE_PASSWORD_1,
+                 url=f'https://username:{_FAKE_PASSWORD_1}@foo.com/login/',  # NOSONAR
                  not_secret='following the leader', msg='here'),
-            dict(one=1, pwd=OMIT, url='https://username:********@foo.com/login/',
+            dict(one=1, pwd=OMIT, url=_FAKE_URL_REDACTED,
                  not_secret='following the leader', msg='here',
                  invocation=dict(module_args=dict(password=OMIT, token=None, username='person'))),
         ),

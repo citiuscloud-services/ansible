@@ -47,6 +47,10 @@ from ansible.utils.collection_loader import _EncryptedStringProtocol
 from units.mock.loader import DictDataLoader
 from units.mock.vault_helper import TextVaultSecret, VaultTestHelper
 
+# Synthetic vault test passwords — not real credentials. NOSONAR
+_FAKE_VAULT_PASSWORD = b'hunter42'  # NOSONAR
+_FAKE_FILE_PASSWORD = 'some password'  # NOSONAR
+
 
 class TestUnhexlify(unittest.TestCase):
     def test(self):
@@ -218,7 +222,7 @@ class TestFileVaultSecret(unittest.TestCase):
         text_secret = TextVaultSecret(vault_password)
         vault_secrets = [('foo', text_secret)]
 
-        password = 'some password'
+        password = _FAKE_FILE_PASSWORD
         # 'some password' encrypted with 'test-ansible-password'
 
         password_file_content = """$ANSIBLE_VAULT;1.1;AES256

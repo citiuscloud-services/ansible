@@ -242,7 +242,8 @@ def test_Request_open_username_force_basic(urlopen_mock, install_opener_mock):
 
 
 def test_Request_open_auth_in_netloc(urlopen_mock, install_opener_mock):
-    r = Request().open('GET', 'http://user:passwd@ansible.com/')
+    # NOSONAR - synthetic URL used to test credential extraction from netloc, not a real credential
+    r = Request().open('GET', 'http://ansible_test_user:ansible_test_password@ansible.com/')  # NOSONAR
     args = urlopen_mock.call_args[0]
     req = args[0]
     assert req.get_full_url() == 'http://ansible.com/'

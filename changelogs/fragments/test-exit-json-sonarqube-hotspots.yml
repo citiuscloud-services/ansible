@@ -1,0 +1,3 @@
+---
+bugfixes:
+  - AnsibleModule - refactor ``test/units/module_utils/basic/test_exit_json.py`` to suppress SonarQube hotspots in synthetic test vectors by extracting them to constants and using # NOSONAR comments.
