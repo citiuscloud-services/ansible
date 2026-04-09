@@ -337,7 +337,7 @@ class RSAPrivateKeyMsg(PrivateKeyMsg):
     d: mpint
     iqmp: mpint
     p: mpint
-    q: mpint
+    q: mpint  # NOSONAR - standard DSA parameter name per SSH protocol (RFC 4253)
     comments: unicode_string = dataclasses.field(default=unicode_string(''), compare=False)
     constraints: constraints = dataclasses.field(default=constraints(b''))
 
@@ -346,7 +346,7 @@ class RSAPrivateKeyMsg(PrivateKeyMsg):
 class DSAPrivateKeyMsg(PrivateKeyMsg):
     type: KeyAlgo
     p: mpint
-    q: mpint
+    q: mpint  # NOSONAR - standard DSA parameter name per SSH protocol (RFC 4253)
     g: mpint
     y: mpint
     x: mpint
@@ -358,7 +358,7 @@ class DSAPrivateKeyMsg(PrivateKeyMsg):
 class EcdsaPrivateKeyMsg(PrivateKeyMsg):
     type: KeyAlgo
     ecdsa_curve_name: unicode_string
-    Q: binary_string
+    Q: binary_string  # NOSONAR - standard ECDSA public point name per SSH protocol
     d: mpint
     comments: unicode_string = dataclasses.field(default=unicode_string(''), compare=False)
     constraints: constraints = dataclasses.field(default=constraints(b''))
@@ -473,7 +473,7 @@ class RSAPublicKeyMsg(PublicKeyMsg):
 class DSAPublicKeyMsg(PublicKeyMsg):
     type: KeyAlgo
     p: mpint
-    q: mpint
+    q: mpint  # NOSONAR - standard DSA parameter name per SSH protocol (RFC 4253)
     g: mpint
     y: mpint
     comments: unicode_string = dataclasses.field(default=unicode_string(''), compare=False)
@@ -483,7 +483,7 @@ class DSAPublicKeyMsg(PublicKeyMsg):
 class EcdsaPublicKeyMsg(PublicKeyMsg):
     type: KeyAlgo
     ecdsa_curve_name: unicode_string
-    Q: binary_string
+    Q: binary_string  # NOSONAR - standard ECDSA public point name per SSH protocol
     comments: unicode_string = dataclasses.field(default=unicode_string(''), compare=False)
 
 

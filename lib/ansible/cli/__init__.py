@@ -500,7 +500,7 @@ class CLI(ABC):
                 'revision': ansible_versions[2]}
 
     @staticmethod
-    def pager(text):
+    def display_pager(text):
         """ find reasonable way to display text """
         # this is a much simpler form of what is in pydoc.py
         if not sys.stdout.isatty():

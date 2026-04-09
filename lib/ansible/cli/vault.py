@@ -471,7 +471,7 @@ class VaultCLI(CLI):
             # the decision that the display doesn't have to be precisely what
             # the input was (leave that to decrypt instead)
             plaintext = self.editor.plaintext(f)
-            self.pager(to_text(plaintext))
+            self.display_pager(to_text(plaintext))
 
     def execute_rekey(self):
         """ re-encrypt a vaulted file with a new secret, the previous secret is required """
