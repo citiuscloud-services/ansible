@@ -660,7 +660,7 @@ class DocCLI(CLI, RoleMixin):
             text.extend(deprecated)
 
         # display results
-        DocCLI.pager("\n".join(text))
+        DocCLI.display_pager("\n".join(text))
 
     def _display_available_roles(self, list_json):
         """Display all roles we can find with a valid argument specification.
@@ -694,7 +694,7 @@ class DocCLI(CLI, RoleMixin):
                 text.append('%s' % role)
 
         # display results
-        DocCLI.pager("\n".join(text))
+        DocCLI.display_pager("\n".join(text))
 
     def _display_role_doc(self, role_json):
         roles = list(role_json.keys())
@@ -710,7 +710,7 @@ class DocCLI(CLI, RoleMixin):
                 raise AnsibleParserError(f"Error extracting role docs from {role!r}.") from ex
 
         # display results
-        DocCLI.pager("\n".join(text))
+        DocCLI.display_pager("\n".join(text))
 
     @staticmethod
     def _list_keywords():
@@ -1044,7 +1044,7 @@ class DocCLI(CLI, RoleMixin):
                 text = DocCLI.tty_ify(DocCLI._dump_yaml(docs))
 
             if text:
-                DocCLI.pager(''.join(text))
+                DocCLI.display_pager(''.join(text))
 
         return 0
 

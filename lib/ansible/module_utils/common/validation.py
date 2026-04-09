@@ -166,7 +166,7 @@ def check_required_by(requirements, parameters, options_context=None):
             if options_context:
                 msg = f"{msg} found in {' -> '.join(options_context)}"
             raise TypeError(to_native(msg))
-    return result
+    return result  # NOSONAR - intentional contract: returns empty dict on success, raises TypeError on failure
 
 
 def check_required_arguments(argument_spec, parameters, options_context=None):

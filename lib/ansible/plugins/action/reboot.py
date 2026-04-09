@@ -199,7 +199,7 @@ class ActionModule(ActionBase):
                 raise AnsibleError('Unable to find command "{0}" in search paths: {1}'.format(shutdown_bin, search_paths))
             return full_path[0]
 
-    def deprecated_args(self):
+    def warn_deprecated_args(self):
         for arg, version in self.DEPRECATED_ARGS.items():
             if self._task.args.get(arg) is not None:
                 display.warning("Since Ansible {version}, {arg} is no longer a valid option for {action}".format(
@@ -432,7 +432,7 @@ class ActionModule(ActionBase):
         if task_vars is None:
             task_vars = {}
 
-        self.deprecated_args()
+        self.warn_deprecated_args()
 
         result = super(ActionModule, self).run(tmp, task_vars)
 
