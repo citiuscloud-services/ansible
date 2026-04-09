@@ -198,7 +198,8 @@ class DeprecatedConfig(Deprecation):
 
     @staticmethod
     def parse(message: str) -> DeprecatedConfig:
-        match = re.search('^(?P<path>.*):[0-9]+:[0-9]+: (?P<config>.*) is scheduled for removal in (?P<version>[0-9.]+)$', message)
+        # Fixed: use [^:]+ for path (colons are the delimiter) and possessive-style boundary for config
+        match = re.search(r'^(?P<path>[^:]+):[0-9]+:[0-9]+: (?P<config>[^ ].*?) is scheduled for removal in (?P<version>[0-9.]+)$', message)
 
         if not match:
             raise Exception(f'Unable to parse: {message}')
@@ -231,7 +232,8 @@ class UpdateBundled(Deprecation):
 
     @staticmethod
     def parse(message: str) -> UpdateBundled:
-        match = re.search('^(?P<path>.*):[0-9]+:[0-9]+: UPDATE (?P<package>.*) from (?P<old>[0-9.]+) to (?P<new>[0-9.]+) (?P<link>https://.*)$', message)
+        # Fixed: path uses [^:]+ (colon-delimited), package uses [^ ]+ (space-delimited), link is anchored at end
+        match = re.search(r'^(?P<path>[^:]+):[0-9]+:[0-9]+: UPDATE (?P<package>[^ ]+) from (?P<old>[0-9.]+) to (?P<new>[0-9.]+) (?P<link>https://\S+)$', message)
 
         if not match:
             raise Exception(f'Unable to parse: {message}')

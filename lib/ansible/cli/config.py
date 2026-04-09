@@ -189,7 +189,7 @@ class ConfigCLI(CLI):
         """
         try:
             with open(self.config_file, 'rb') as f:
-                self.pager(to_text(f.read(), errors='surrogate_or_strict'))
+                self.display_pager(to_text(f.read(), errors='surrogate_or_strict'))
         except Exception as e:
             raise AnsibleError("Failed to open config file: %s" % to_native(e))
 
@@ -262,7 +262,7 @@ class ConfigCLI(CLI):
         elif context.CLIARGS['format'] == 'json':
             output = _json.json_dumps_formatted(config_entries)
 
-        self.pager(to_text(output, errors='surrogate_or_strict'))
+        self.display_pager(to_text(output, errors='surrogate_or_strict'))
 
     def _get_settings_vars(self, settings, subkey):
 
@@ -410,7 +410,7 @@ class ConfigCLI(CLI):
                     for plugin in plugin_types[ptype].keys():
                         data.extend(self._get_settings_vars(plugin_types[ptype][plugin], context.CLIARGS['format']))
 
-        self.pager(to_text('\n'.join(data), errors='surrogate_or_strict'))
+        self.display_pager(to_text('\n'.join(data), errors='surrogate_or_strict'))
 
     def _render_settings(self, config):
 
@@ -620,7 +620,7 @@ class ConfigCLI(CLI):
         elif context.CLIARGS['format'] == 'json':
             text = _json.json_dumps_formatted(output)
 
-        self.pager(to_text(text, errors='surrogate_or_strict'))
+        self.display_pager(to_text(text, errors='surrogate_or_strict'))
 
     def execute_validate(self):
 

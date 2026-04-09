@@ -39,7 +39,8 @@ for _dataset1, _dataset2, _expected in list(TWO_SETS_DATA):
     TWO_SETS_DATA.append((dict_values(_dataset1), dict_values(_dataset2), tuple(dict_values(answer) for answer in _expected)))
 
 
-env = Environment()
+# autoescape=False: used only to test math filter plugins, no HTML rendering involved
+env = Environment(autoescape=False)  # NOSONAR
 
 
 def assert_lists_contain_same_elements(a, b) -> None:

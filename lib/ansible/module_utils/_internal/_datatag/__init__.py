@@ -223,7 +223,7 @@ class AnsibleSerializable:
     _known_type_map: t.ClassVar[t.Dict[str, t.Type['AnsibleSerializable']]] = {}
     _TYPE_KEY: t.ClassVar[str] = '__ansible_type'
 
-    _type_key: t.ClassVar[str]
+    _type_key: t.ClassVar[str]  # NOSONAR - distinct from _TYPE_KEY: this holds the per-class type name, _TYPE_KEY is the JSON field key
 
     def __init_subclass__(cls, **kwargs) -> None:
         # this is needed to call __init__subclass__ on mixins for derived types

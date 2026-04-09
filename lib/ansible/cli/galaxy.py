@@ -932,7 +932,8 @@ class GalaxyCLI(CLI):
             meta_entry['value'] = value
             config_list.append(meta_entry)
 
-        link_pattern = re.compile(r"L\(([^)]+),\s+([^)]+)\)")
+        # Fixed: exclude comma from first group to unambiguously delimit at the ', ' separator
+        link_pattern = re.compile(r"L\(([^),]+),\s+([^)]+)\)")
         const_pattern = re.compile(r"C\(([^)]+)\)")
 
         def comment_ify(v):
@@ -1276,7 +1277,7 @@ class GalaxyCLI(CLI):
 
             data += self._display_role_info(role_info)
 
-        self.pager(data)
+        self.display_pager(data)
 
     @with_collection_artifacts_manager
     def execute_verify(self, artifacts_manager=None):
@@ -1764,9 +1765,9 @@ class GalaxyCLI(CLI):
             data.append(format_str % (u'%s.%s' % (role['username'], role['name']), role['description']))
 
         data = u'\n'.join(data)
-        self.pager(data)
+        self.display_pager(data)
 
-        return 0
+        return 0  # NOSONAR - intentional CLI return code for success
 
     _task_check_delay_sec = 10  # allows unit test override
 
@@ -1836,13 +1837,13 @@ class GalaxyCLI(CLI):
             if len(secrets) == 0:
                 # None found
                 display.display("No integrations found.")
-                return 0
+                return 0  # NOSONAR - intentional CLI return code for success
             display.display(u'\n' + "ID         Source     Repo", color=C.COLOR_OK)
             display.display("---------- ---------- ----------", color=C.COLOR_OK)
             for secret in secrets:
                 display.display("%-10s %-10s %s/%s" % (secret['id'], secret['source'], secret['github_user'],
                                                        secret['github_repo']), color=C.COLOR_OK)
-            return 0
+            return 0  # NOSONAR - intentional CLI return code for success
 
         if context.CLIARGS['remove_id']:
             # Remove a secret

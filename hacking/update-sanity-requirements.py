@@ -96,7 +96,8 @@ def pre_build_instructions(requirements: str) -> str:
 
     package_versions = {
         match.group('package').lower(): match.group('version') for match
-        in (re.search('^(?P<package>.*)==(?P<version>.*)$', requirement) for requirement in parsed_requirements)
+        # Fixed: package name cannot contain '=', version is the remainder after first '=='
+        in (re.search(r'^(?P<package>[^=]+)==(?P<version>[^=].*)$', requirement) for requirement in parsed_requirements)
         if match
     }
 

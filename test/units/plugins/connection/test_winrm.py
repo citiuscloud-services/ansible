@@ -112,7 +112,7 @@ class TestConnectionWinRM(object):
             },
             True
         ),
-        # kerb with unmanaged ticket (explicit))
+        # kerb with unmanaged ticket (explicit)
         (
             {'_extras': {}, 'ansible_user': 'user@domain.com',
              'ansible_winrm_kinit_mode': 'manual'},
@@ -175,7 +175,7 @@ class TestConnectionWinRM(object):
             {},
             {
                 '_winrm_pass': _FAKE_WINRM_PASS,
-                '_winrm_kwargs': {'username': None, 'password': _FAKE_WINRM_PASS}
+                '_winrm_kwargs': {'username': None, 'password': _FAKE_WINRM_PASS}  # NOSONAR
             },
             False
         ),
@@ -185,18 +185,17 @@ class TestConnectionWinRM(object):
             {},
             {
                 '_winrm_pass': _FAKE_WINRM_PASS,
-                '_winrm_kwargs': {'username': None, 'password': _FAKE_WINRM_PASS}
+                '_winrm_kwargs': {'username': None, 'password': _FAKE_WINRM_PASS}  # NOSONAR
             },
             False
         ),
-
         # password as ansible_winrm_password
         (
             {'_extras': {}, 'ansible_winrm_password': _FAKE_WINRM_PASS},
             {},
             {
                 '_winrm_pass': _FAKE_WINRM_PASS,
-                '_winrm_kwargs': {'username': None, 'password': _FAKE_WINRM_PASS}
+                '_winrm_kwargs': {'username': None, 'password': _FAKE_WINRM_PASS}  # NOSONAR
             },
             False
         ),

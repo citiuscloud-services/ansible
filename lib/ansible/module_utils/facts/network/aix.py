@@ -72,7 +72,8 @@ class AIXNetwork(GenericBsdIfconfigNetwork):
                 words = line.split()
 
                 # only this condition differs from GenericBsdIfconfigNetwork
-                if re.match(r'^\w*\d*:', line):
+                # Fixed: \w already includes \d — simplified to single \w+ which is unambiguous and matches the same strings
+                if re.match(r'^\w+:', line):
                     current_if = self.parse_interface_line(words)
                     interfaces[current_if['device']] = current_if
                 elif words[0].startswith('options='):

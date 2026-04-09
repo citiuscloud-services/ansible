@@ -984,11 +984,12 @@ def get_next_release_date(start: datetime.date, step: int, after: datetime.date)
 
 def create_template_environment() -> jinja2.Environment:
     """Create and return a jinja2 environment."""
-    env = jinja2.Environment()
+    env = jinja2.Environment(
+        autoescape=False,  # Plaintext/Markdown release notes output, not HTML — auto-escaping not applicable
+    )
     env.filters.update(
         basename=os.path.basename,
     )
-
     return env
 
 

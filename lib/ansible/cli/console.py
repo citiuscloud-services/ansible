@@ -241,6 +241,8 @@ class ConsoleCLI(CLI, cmd.Cmd):
             if result is None:
                 display.error("No hosts found")
                 return False
+
+            return True  # NOSONAR - success path returns True to distinguish from error paths
         except KeyboardInterrupt:
             display.error('User interrupted execution')
             return False

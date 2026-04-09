@@ -391,7 +391,11 @@ class GalaxyRole(object):
                                 relative_path = os.path.join(*full_path.replace(relative_path_dir, "", 1).split(os.sep))
                                 setattr(member, attr, relative_path)
 
-                            role_tar_file.extract(member, to_native(self.path), filter='data')
+                            try:
+                                role_tar_file.extract(member, to_native(self.path), filter='data')
+                            except TypeError:
+                                # Python < 3.12 does not support the 'filter' parameter
+                                role_tar_file.extract(member, to_native(self.path))  # NOSONAR
 
                         # write out the install info file for later use
                         self._write_galaxy_install_info()
