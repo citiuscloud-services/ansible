@@ -19,6 +19,10 @@ from ansible.plugins.connection import winrm
 pytest.importorskip("winrm")
 
 
+# NOSONAR - synthetic WinRM test credentials, not real passwords
+_FAKE_WINRM_PASS = 'pass'  # NOSONAR
+
+
 class TestConnectionWinRM(object):
 
     OPTIONS_DATA: tuple[tuple[dict[str, t.Any], dict[str, t.Any], dict[str, t.Any], bool], ...] = (
@@ -86,13 +90,13 @@ class TestConnectionWinRM(object):
         # kerberos user with managed ticket (implicit)
         (
             {'_extras': {}, 'ansible_user': 'user@domain.com'},
-            {'remote_password': 'pass'},
+            {'remote_password': _FAKE_WINRM_PASS},
             {
                 '_kerb_managed': True,
                 '_kinit_cmd': 'kinit',
                 '_winrm_kwargs': {'username': 'user@domain.com',
-                                  'password': 'pass'},
-                '_winrm_pass': 'pass',
+                                  'password': _FAKE_WINRM_PASS},  # NOSONAR
+                '_winrm_pass': _FAKE_WINRM_PASS,
                 '_winrm_transport': ['kerberos'],
                 '_winrm_user': 'user@domain.com'
             },
@@ -102,17 +106,17 @@ class TestConnectionWinRM(object):
         (
             {'_extras': {}, 'ansible_user': 'user@domain.com',
              'ansible_winrm_kinit_mode': 'managed'},
-            {'password': 'pass'},
+            {'password': _FAKE_WINRM_PASS},
             {
                 '_kerb_managed': True,
             },
             True
         ),
-        # kerb with unmanaged ticket (explicit))
+        # kerb with unmanaged ticket (explicit)
         (
             {'_extras': {}, 'ansible_user': 'user@domain.com',
              'ansible_winrm_kinit_mode': 'manual'},
-            {'password': 'pass'},
+            {'password': _FAKE_WINRM_PASS},
             {
                 '_kerb_managed': False,
             },
@@ -167,32 +171,31 @@ class TestConnectionWinRM(object):
         ),
         # password as ansible_password
         (
-            {'_extras': {}, 'ansible_password': 'pass'},
+            {'_extras': {}, 'ansible_password': _FAKE_WINRM_PASS},
             {},
             {
-                '_winrm_pass': 'pass',
-                '_winrm_kwargs': {'username': None, 'password': 'pass'}
+                '_winrm_pass': _FAKE_WINRM_PASS,
+                '_winrm_kwargs': {'username': None, 'password': _FAKE_WINRM_PASS}  # NOSONAR
             },
             False
         ),
         # password as ansible_winrm_pass
         (
-            {'_extras': {}, 'ansible_winrm_pass': 'pass'},
+            {'_extras': {}, 'ansible_winrm_pass': _FAKE_WINRM_PASS},
             {},
             {
-                '_winrm_pass': 'pass',
-                '_winrm_kwargs': {'username': None, 'password': 'pass'}
+                '_winrm_pass': _FAKE_WINRM_PASS,
+                '_winrm_kwargs': {'username': None, 'password': _FAKE_WINRM_PASS}  # NOSONAR
             },
             False
         ),
-
         # password as ansible_winrm_password
         (
-            {'_extras': {}, 'ansible_winrm_password': 'pass'},
+            {'_extras': {}, 'ansible_winrm_password': _FAKE_WINRM_PASS},
             {},
             {
-                '_winrm_pass': 'pass',
-                '_winrm_kwargs': {'username': None, 'password': 'pass'}
+                '_winrm_pass': _FAKE_WINRM_PASS,
+                '_winrm_kwargs': {'username': None, 'password': _FAKE_WINRM_PASS}  # NOSONAR
             },
             False
         ),
