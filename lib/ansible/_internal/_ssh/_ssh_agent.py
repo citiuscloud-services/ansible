@@ -284,14 +284,14 @@ class PrivateKeyMsg(Msg):
                     mpint(rsa_pn.d),
                     mpint(rsa_pn.iqmp),
                     mpint(rsa_pn.p),
-                    mpint(rsa_pn.q),
+                    mpint(rsa_pn.dsa_q),
                 )
             case DSAPrivateKey():
                 dsa_pn: DSAPrivateNumbers = private_key.private_numbers()
                 return DSAPrivateKeyMsg(
                     KeyAlgo.DSA,
                     mpint(dsa_pn.public_numbers.parameter_numbers.p),
-                    mpint(dsa_pn.public_numbers.parameter_numbers.q),
+                    mpint(dsa_pn.public_numbers.parameter_numbers.dsa_q),
                     mpint(dsa_pn.public_numbers.parameter_numbers.g),
                     mpint(dsa_pn.public_numbers.y),
                     mpint(dsa_pn.x),
@@ -337,7 +337,7 @@ class RSAPrivateKeyMsg(PrivateKeyMsg):
     d: mpint
     iqmp: mpint
     p: mpint
-    q: mpint  # NOSONAR - standard DSA parameter name per SSH protocol (RFC 4253)
+    dsa_q: mpint
     comments: unicode_string = dataclasses.field(default=unicode_string(''), compare=False)
     constraints: constraints = dataclasses.field(default=constraints(b''))
 
@@ -346,7 +346,7 @@ class RSAPrivateKeyMsg(PrivateKeyMsg):
 class DSAPrivateKeyMsg(PrivateKeyMsg):
     type: KeyAlgo
     p: mpint
-    q: mpint  # NOSONAR - standard DSA parameter name per SSH protocol (RFC 4253)
+    dsa_q: mpint
     g: mpint
     y: mpint
     x: mpint
@@ -408,7 +408,7 @@ class PublicKeyMsg(Msg):
             case KeyAlgo.ED25519:
                 return Ed25519PublicKey.from_public_bytes(self.enc_a)
             case KeyAlgo.DSA:
-                return DSAPublicNumbers(self.y, DSAParameterNumbers(self.p, self.q, self.g)).public_key()
+                return DSAPublicNumbers(self.y, DSAParameterNumbers(self.p, self.dsa_q, self.g)).public_key()
             case _:
                 raise NotImplementedError(type)
 
@@ -420,7 +420,7 @@ class PublicKeyMsg(Msg):
                 return DSAPublicKeyMsg(
                     KeyAlgo.DSA,
                     mpint(dsa_pn.parameter_numbers.p),
-                    mpint(dsa_pn.parameter_numbers.q),
+                    mpint(dsa_pn.parameter_numbers.dsa_q),
                     mpint(dsa_pn.parameter_numbers.g),
                     mpint(dsa_pn.y),
                 )
@@ -473,7 +473,7 @@ class RSAPublicKeyMsg(PublicKeyMsg):
 class DSAPublicKeyMsg(PublicKeyMsg):
     type: KeyAlgo
     p: mpint
-    q: mpint  # NOSONAR - standard DSA parameter name per SSH protocol (RFC 4253)
+    dsa_q: mpint
     g: mpint
     y: mpint
     comments: unicode_string = dataclasses.field(default=unicode_string(''), compare=False)
