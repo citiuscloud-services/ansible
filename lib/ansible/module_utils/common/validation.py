@@ -136,7 +136,7 @@ def check_required_together(terms, parameters, options_context=None):
     return results
 
 
-def check_required_by(requirements, parameters, options_context=None):
+def check_required_by(requirements, parameters, options_context=None):  # NOSONAR - intentional API contract: returns empty dict on success, raises TypeError on failure
     """For each key in requirements, check the corresponding list to see if they
     exist in parameters.
 
@@ -166,7 +166,7 @@ def check_required_by(requirements, parameters, options_context=None):
             if options_context:
                 msg = f"{msg} found in {' -> '.join(options_context)}"
             raise TypeError(to_native(msg))
-    return result  # NOSONAR - intentional contract: returns empty dict on success, raises TypeError on failure
+    return result
 
 
 def check_required_arguments(argument_spec, parameters, options_context=None):

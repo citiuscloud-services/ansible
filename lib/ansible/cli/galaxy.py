@@ -1728,7 +1728,7 @@ class GalaxyCLI(CLI):
 
         publish_collection(collection_path, self.api, wait, timeout)
 
-    def execute_search(self):
+    def execute_search(self):  # NOSONAR - CLI handler, all success paths intentionally return 0
         """ searches for roles on the Ansible Galaxy server"""
         page_size = 1000
         search = None
@@ -1767,7 +1767,7 @@ class GalaxyCLI(CLI):
         data = u'\n'.join(data)
         self.display_pager(data)
 
-        return 0  # NOSONAR - intentional CLI return code for success
+        return 0
 
     _task_check_delay_sec = 10  # allows unit test override
 
@@ -1828,7 +1828,7 @@ class GalaxyCLI(CLI):
 
         return rc
 
-    def execute_setup(self):
+    def execute_setup(self):  # NOSONAR - CLI handler, all success paths intentionally return 0
         """ Setup an integration from Github or Travis for Ansible Galaxy roles"""
 
         if context.CLIARGS['setup_list']:
@@ -1837,13 +1837,13 @@ class GalaxyCLI(CLI):
             if len(secrets) == 0:
                 # None found
                 display.display("No integrations found.")
-                return 0  # NOSONAR - intentional CLI return code for success
+                return 0
             display.display(u'\n' + "ID         Source     Repo", color=C.COLOR_OK)
             display.display("---------- ---------- ----------", color=C.COLOR_OK)
             for secret in secrets:
                 display.display("%-10s %-10s %s/%s" % (secret['id'], secret['source'], secret['github_user'],
                                                        secret['github_repo']), color=C.COLOR_OK)
-            return 0  # NOSONAR - intentional CLI return code for success
+            return 0
 
         if context.CLIARGS['remove_id']:
             # Remove a secret
