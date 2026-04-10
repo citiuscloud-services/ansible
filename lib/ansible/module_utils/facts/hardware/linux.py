@@ -423,16 +423,10 @@ class LinuxHardware(Hardware):
             ('system_vendor', 'product_version', 'product_serial', 'product_name', 'product_uuid'),
             'NA'
         )
-        # Fixed: replaced .+ with [^\r\n]+ to prevent matching across line boundaries and eliminate backtracking
+        # Fixed: anchored alternation group with length-bounded captures to prevent catastrophic backtracking on long lines
         sysinfo_re = re.compile(
-            r"""
-                ^
-                    (?:Manufacturer:\s+(?P<system_vendor>[^\r\n]+))|
-                    (?:Type:\s+(?P<product_name>[^\r\n]+))|
-                    (?:Sequence\ Code:\s+0+(?P<product_serial>[^\r\n]+))
-                $
-            """,
-            re.VERBOSE | re.MULTILINE
+            r"^(?:Manufacturer:\s+(?P<system_vendor>[^ \n]{1,256})|Type:\s+(?P<product_name>[^ \n]{1,256})|Sequence\ Code:\s+0+(?P<product_serial>[A-Z0-9]{1,64}))",
+            re.MULTILINE
         )
         data = get_file_content('/proc/sysinfo')
         for match in sysinfo_re.finditer(data):

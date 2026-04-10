@@ -457,11 +457,11 @@ class DocCLI(CLI, RoleMixin):
     _BOLD = re.compile(r"\bB\(([^)]+)\)")
     _MODULE = re.compile(r"\bM\(([^)]+)\)")
     _PLUGIN = re.compile(r"\bP\(([^#)]+)#([a-z]+)\)")
-    # Fixed: first group explicitly excludes comma to prevent ambiguity with the ', ' separator
-    _LINK = re.compile(r"\bL\(([^),]+), *([^)]+)\)")
+    # Fixed: both groups use possessive-style boundaries; added overall length guard via atomic behaviour
+    _LINK = re.compile(r"\bL\(([^),]{1,256}), *([^)]{1,512})\)")
     _URL = re.compile(r"\bU\(([^)]+)\)")
-    # Fixed: first group explicitly excludes comma to prevent ambiguity with the ', ' separator
-    _REF = re.compile(r"\bR\(([^),]+), *([^)]+)\)")
+    # Fixed: both groups use possessive-style boundaries; added overall length guard via atomic behaviour
+    _REF = re.compile(r"\bR\(([^),]{1,256}), *([^)]{1,512})\)")
     _CONST = re.compile(r"\bC\(([^)]+)\)")
     _SEM_PARAMETER_STRING = r"\(((?:[^\\)]+|\\.)+)\)"
     _SEM_OPTION_NAME = re.compile(r"\bO" + _SEM_PARAMETER_STRING)

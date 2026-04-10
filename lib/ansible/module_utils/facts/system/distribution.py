@@ -213,7 +213,7 @@ class DistributionFiles:
         if 'Slackware' not in data:
             return False, slackware_facts  # TODO: remove
         slackware_facts['distribution'] = name
-        version = re.findall(r'\w+[.]\w+\+?', data)
+        version = re.findall(r'[A-Za-z0-9]{1,32}[.][A-Za-z0-9]{1,32}\+?', data)
         if version:
             slackware_facts['distribution_version'] = version[0]
         return True, slackware_facts
@@ -348,7 +348,7 @@ class DistributionFiles:
             debian_version_path = '/etc/debian_version'
             distdata = get_file_lines(debian_version_path)
             for line in distdata:
-                m = re.search(r'(\d+)\.(\d+)', line.strip())
+                m = re.search(r'(\d{1,8})\.(\d{1,8})', line.strip())
                 if m:
                     debian_facts['distribution_minor_version'] = m.groups()[1]
         elif 'Ubuntu' in data:
@@ -363,7 +363,7 @@ class DistributionFiles:
                 debian_facts['distribution'] = 'Kali'
             elif 'Parrot' in data:
                 debian_facts['distribution'] = 'Parrot'
-            release = re.search('DISTRIB_RELEASE=(.*)', data)
+            release = re.search('DISTRIB_RELEASE=([^\r\n]{1,64})', data)
             if release:
                 debian_facts['distribution_release'] = release.groups()[0]
         elif 'Devuan' in data:
@@ -377,13 +377,13 @@ class DistributionFiles:
                 debian_facts['distribution_major_version'] = version.group(1)
         elif 'Cumulus' in data:
             debian_facts['distribution'] = 'Cumulus Linux'
-            version = re.search(r"VERSION_ID=(.*)", data)
+            version = re.search(r"VERSION_ID=([^\r\n]{1,64})", data)
             if version:
                 major, _minor, _dummy_ver = version.group(1).split(".")
                 debian_facts['distribution_version'] = version.group(1)
                 debian_facts['distribution_major_version'] = major
 
-            release = re.search(r'VERSION="(.*)"', data)
+            release = re.search(r'VERSION="([^"]{1,128})"', data)
             if release:
                 debian_facts['distribution_release'] = release.groups()[0]
         elif "Mint" in data:
@@ -608,7 +608,7 @@ class Distribution(object):
     def get_distribution_HPUX(self):
         hpux_facts = {}
         rc, out, err = self.module.run_command(r"/usr/sbin/swlist |egrep 'HPUX.*OE.*[AB].[0-9]+\.[0-9]+'", use_unsafe_shell=True)
-        data = re.search(r'HPUX.*OE.*([AB].[0-9]+\.[0-9]+)\.([0-9]+).*', out)
+        data = re.search(r'HPUX\S*\s+OE\S*\s+([AB]\.[0-9]{1,4}\.[0-9]{1,4})\.([0-9]{1,8})', out)
         if data:
             hpux_facts['distribution_version'] = data.groups()[0]
             hpux_facts['distribution_release'] = data.groups()[1]
@@ -627,7 +627,7 @@ class Distribution(object):
     def get_distribution_FreeBSD(self):
         freebsd_facts = {}
         freebsd_facts['distribution_release'] = platform.release()
-        data = re.search(r'(\d+)\.(\d+)-(RELEASE|STABLE|CURRENT|RC|PRERELEASE).*', freebsd_facts['distribution_release'])
+        data = re.search(r'(\d{1,4})\.(\d{1,4})-(RELEASE|STABLE|CURRENT|RC|PRERELEASE)', freebsd_facts['distribution_release'])
         if 'trueos' in platform.version():
             freebsd_facts['distribution'] = 'TrueOS'
         if data:
@@ -639,7 +639,7 @@ class Distribution(object):
         openbsd_facts = {}
         openbsd_facts['distribution_version'] = platform.release()
         rc, out, err = self.module.run_command("/sbin/sysctl -n kern.version")
-        match = re.match(r'OpenBSD\s[0-9]+.[0-9]+-(\S+)\s.*', out)
+        match = re.match(r'OpenBSD\s[0-9]{1,2}.[0-9]{1,2}-(\S{1,32})\s', out)
         if match:
             openbsd_facts['distribution_release'] = match.groups()[0]
         else:
@@ -651,7 +651,7 @@ class Distribution(object):
             'distribution_release': platform.release()
         }
         rc, out, dummy = self.module.run_command("/sbin/sysctl -n kern.version")
-        match = re.search(r'v(\d+)\.(\d+)\.(\d+)-(RELEASE|STABLE|CURRENT).*', out)
+        match = re.search(r'v(\d{1,4})\.(\d{1,4})\.(\d{1,4})-(RELEASE|STABLE|CURRENT)', out)
         if match:
             dragonfly_facts['distribution_major_version'] = match.group(1)
             dragonfly_facts['distribution_version'] = '%s.%s.%s' % match.groups()[:3]
@@ -662,7 +662,7 @@ class Distribution(object):
         platform_release = platform.release()
         netbsd_facts['distribution_release'] = platform_release
         rc, out, dummy = self.module.run_command("/sbin/sysctl -n kern.version")
-        match = re.match(r'NetBSD\s(\d+)\.(\d+)\s\((GENERIC)\).*', out)
+        match = re.match(r'NetBSD\s(\d{1,4})\.(\d{1,4})\s\((GENERIC)\)', out)
         if match:
             netbsd_facts['distribution_major_version'] = match.group(1)
             netbsd_facts['distribution_version'] = '%s.%s' % match.groups()[:2]

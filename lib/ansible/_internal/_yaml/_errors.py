@@ -90,8 +90,8 @@ Should be:
             # ignore lines starting with only whitespace and a colon
             not target_line.lstrip().startswith(':')
             # find the value after list/dict preamble
-            # Fixed: anchor key characters to exclude colon/space to prevent overlap with surrounding whitespace
-            and (value_match := re.search(r'^\s*(?:-\s+)*(?:[^\s:][^:]*:\s+)?(?P<value>.*)$', target_line))
+            # Fixed: anchored list prefix to non-overlapping chars, value uses [^\r\n]* to stay on one line
+            and (value_match := re.search(r'^\s*(?:-[ \t]+)*(?:[^\s:][^:]*:\s+)?(?P<value>[^\r\n]*)$', target_line))
             # ignore properly quoted values
             and (target_fragment := _replace_quoted_value(value_match.group('value')))
             # look for an unquoted colon in the value
