@@ -1,0 +1,4 @@
+{
+    "sonarQubeUri": "https://sonarqube-sonarqube-sonarqube.apps.ocpv.citiuscloud.local",
+    "projectKey": "Ansible"
+}
