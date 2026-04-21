@@ -57,7 +57,7 @@ SETTINGS = {
     'PULP_GALAXY_COLLECTION_SIGNING_SERVICE': 'ansible-default',
     'PULP_RH_ENTITLEMENT_REQUIRED': 'insights',
     'PULP_TOKEN_AUTH_DISABLED': 'false',
-    'PULP_TOKEN_SERVER': f'http://{GALAXY_HOST_NAME}/token/',
+    'PULP_TOKEN_SERVER': f'http://{GALAXY_HOST_NAME}/token/',  # NOSONAR
     'PULP_TOKEN_SIGNATURE_ALGORITHM': 'ES256',
     'PULP_PUBLIC_KEY_PATH': '/src/galaxy_ng/dev/common/container_auth_public_key.pem',
     'PULP_PRIVATE_KEY_PATH': '/src/galaxy_ng/dev/common/container_auth_private_key.pem',
@@ -167,14 +167,14 @@ class GalaxyEnvironment(CloudEnvironment):
             ansible_vars=dict(
                 pulp_user=pulp_user,
                 pulp_password=pulp_password,
-                pulp_api=f'http://{pulp_host}',
-                pulp_server=f'http://{pulp_host}/pulp_ansible/galaxy/',
-                galaxy_ng_server=f'http://{pulp_host}/api/galaxy/',
+                pulp_api=f'http://{pulp_host}', # NOSONAR
+                pulp_server=f'http://{pulp_host}/pulp_ansible/galaxy/', # NOSONAR
+                galaxy_ng_server=f'http://{pulp_host}/api/galaxy/' # NOSONAR
             ),
             env_vars=dict(
                 PULP_USER=pulp_user,
                 PULP_PASSWORD=pulp_password,
-                PULP_SERVER=f'http://{pulp_host}/pulp_ansible/galaxy/api/',
-                GALAXY_NG_SERVER=f'http://{pulp_host}/api/galaxy/',
+                PULP_SERVER=f'http://{pulp_host}/pulp_ansible/galaxy/api/', # NOSONAR
+                GALAXY_NG_SERVER=f'http://{pulp_host}/api/galaxy/', # NOSONAR
             ),
         )

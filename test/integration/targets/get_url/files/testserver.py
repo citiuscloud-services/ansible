@@ -6,7 +6,7 @@ import sys
 
 if __name__ == '__main__':
     PORT = int(sys.argv[1])
-
+    # Custom handler for testing incomplete HTTP responses
     class Handler(http.server.SimpleHTTPRequestHandler):
         def do_GET(self):
             if self.path == '/incompleteRead':

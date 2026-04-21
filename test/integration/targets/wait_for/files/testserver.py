@@ -10,5 +10,5 @@ if __name__ == '__main__':
     # This HTTP server is intended for local/testing use only.
     # It does not handle sensitive data, so HTTPS is not required here.
     Handler = http.server.SimpleHTTPRequestHandler
-    httpd = socketserver.TCPServer(("", PORT), Handler)
+    httpd = socketserver.TCPServer(("", PORT), Handler)  # NOSONAR
     httpd.serve_forever()
