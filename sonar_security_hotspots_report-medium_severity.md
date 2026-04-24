@@ -1,6 +1,6 @@
 # Sonar Security Hotspots Review - Medium severity
 
-Date: 2026-04-23
+Date: 2026-04-24
 
 Scope:
 - Source branch: `devel`
@@ -46,7 +46,7 @@ Disposition summary:
 | 22 | `lib/ansible/module_utils/facts/virtual/hpux.py:45` | Local `hpvminfo` output on managed host | False positive | Local virtualization fact detection. |
 | 23 | `lib/ansible/module_utils/facts/virtual/hpux.py:49` | Local `hpvminfo` output on managed host | False positive | Local virtualization fact detection. |
 | 24 | `lib/ansible/module_utils/facts/virtual/hpux.py:53` | Local `hpvminfo` output on managed host | False positive | Local virtualization fact detection. |
-| 25 | `lib/ansible/module_utils/urls.py:101` | `WWW-Authenticate` header from HTTP 401 response | False positive | The header is peer-supplied, but the request URL is still Ansible-side input. Tracing `fetch_url()` -> `open_url()` -> `Request.open()` shows the URL originates from operator/playbook/config input or Galaxy/plugin configuration. In Galaxy/plugin direct uses, URLs are either operator/config supplied, locally derived from those trusted settings, or returned by a server the operator explicitly chose. Under Ansible's trust model this is not treated as an untrusted inbound boundary. |
+| 25 | `lib/ansible/module_utils/urls.py:101` | `WWW-Authenticate` header from HTTP 401 response | False positive | The header is peer-supplied, but this path is only relevant when `use_gssapi=True`. Tracing `fetch_url()` -> `open_url()` -> `Request.open()` shows the request originates from operator/playbook/config input. In Galaxy/plugin uses, URLs are either operator/config supplied, locally derived from those trusted settings, or follow-on URLs such as `download_url`/`next_link` returned by a server the operator explicitly chose. Under Ansible's trust model this is not treated as an untrusted inbound boundary. |
 | 26 | `lib/ansible/modules/_apt_repository.py:279` | Repository source line | False positive | Module parses operator-managed repository definitions one line at a time. |
 | 27 | `lib/ansible/modules/cron.py:291` | First few crontab header lines | False positive | Regexes only inspect crontab tool header lines, not an unbounded hostile stream. |
 | 28 | `lib/ansible/modules/cron.py:292` | First few crontab header lines | False positive | Same as above. |
@@ -78,10 +78,11 @@ Current classification: false positive.
 
 Why:
 - The regex processes `WWW-Authenticate`, which is supplied by the remote HTTP peer after a `401` response.
+- The code path is only relevant when `use_gssapi=True` enables `HTTPGSSAPIAuthHandler`.
 - The call path is real: Ansible registers `HTTPGSSAPIAuthHandler`, then `urllib.request.urlopen()` dispatches `401` responses into `http_error_401()`, which calls `get_auth_value()`.
 - However, tracing `fetch_url()` -> `open_url()` -> `Request.open()` shows the request URL originates on the Ansible side.
 - For normal module use, the URL comes from operator/playbook input such as `module.params['url']` or `module.params['key']`.
-- For direct `open_url()` use in plugins and Galaxy, the URL comes from lookup terms, module/plugin configuration, Galaxy server configuration, or metadata returned by a server the operator explicitly selected.
+- For direct `open_url()` use in plugins and Galaxy, the URL comes from lookup terms, module/plugin configuration, Galaxy server configuration, or follow-on metadata such as `download_url` / `next_link` returned by a server the operator explicitly selected.
 
 Conclusion:
 - Even though the header value is remote-controlled, the interaction is initiated toward an operator-selected endpoint or a server derived from operator-selected configuration.
